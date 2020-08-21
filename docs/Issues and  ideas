@@ -5,5 +5,5 @@ Issues and ideas:
 using FinEtoolsFlexBeams
 import Pkg; Pkg.add("DocumenterTools")
 using DocumenterTools
-Travis.genkeys(user="PetrKryslUCSD", repo="https://github.com/PetrKryslUCSD/FinEtoolsFlexBeams.jl")
+Travis.genkeys(user="PetrKryslUCSD", repo="https://github.com/PetrKryslUCSD/FinEtoolsFlexBeamsTutorials.jl")
 Pkg.rm("DocumenterTools")
