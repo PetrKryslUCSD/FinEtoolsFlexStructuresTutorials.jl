@@ -15,7 +15,7 @@ in another. The results are compared with analytical expressions.
 - Demonstrate visualization of the free vibrations.
 
 ```julia
-#%%
+#
 ```
 
 ## Definition of the basic inputs
@@ -46,7 +46,7 @@ Here are the cross-sectional dimensions and the length of the beam between suppo
 ```julia
 b = 1.8 * phun("in"); h = 1.8 * phun("in"); L = 100 * phun("in");
 
-#%%
+#
 ```
 
 ## Analytical frequencies
