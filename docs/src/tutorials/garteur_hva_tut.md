@@ -260,7 +260,7 @@ PM = FEMMPointMassModule
 There is a sensor on the tail.
 
 ```julia
-femmcm1 =  PM.FEMMPointMass(IntegDomain(FESetP1(reshape([sensor202n;], 1, 1)), PointRule()), FFltMat(2*L*L/5*L/5*2*rho*I(3)));
+femmcm1 =  PM.FEMMPointMass(IntegDomain(FESetP1(reshape([sensors[202];], 1, 1)), PointRule()), FFltMat(2*L*L/5*L/5*2*rho*I(3)));
 ```
 
 These are the forward/interior locations on the wing drums where the
