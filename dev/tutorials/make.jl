@@ -11,5 +11,6 @@ end
 
 # Copy ancillary files
 for a in ["fast_top_ref.txt"]
+    println("\nAncillary $a in $(pwd())\n")
     cp(a, "../../../src/" * a, force = true)
 end
