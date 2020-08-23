@@ -156,6 +156,8 @@ using FinEtoolsFlexBeams.RotUtilModule: initial_Rfield, linear_update_rotation_f
 using DelimitedFiles
 
 function integrate(tend, CB, geom0, u0, Rfield0, dchi, v0, report)
+    # Make sure we don't clobber any of these variable fields
+    geom0, u0, Rfield0, dchi, v0 = deepcopy((geom0, u0, Rfield0, dchi, v0))
     # Additional fields
     stepdchi = deepcopy(dchi)
     u1 = deepcopy(u0)
@@ -172,12 +174,11 @@ function integrate(tend, CB, geom0, u0, Rfield0, dchi, v0, report)
     TMPv = deepcopy(rhs)
     utol = 1e-13*dchi.nfreedofs;
     
-    
     t = 0.0;
     step = 0;
     while (t <= tend)
         t = t + dt;
-        println("Time $(t)"); # pause
+        (mod(step, 50)==0) && println("Time $(t)"); # pause
         # Initialization
         applyebc!(dchi) # Apply boundary conditions
         u1.values[:] = u0.values[:]; # guess
@@ -222,8 +223,6 @@ function integrate(tend, CB, geom0, u0, Rfield0, dchi, v0, report)
         v0.values[:] = v1.values[:];       # update the velocities
         a0.values[:] = a1.values[:];       # update the accelerations
         
-        
-        
         report(step, u1, Rfield1)
         
         step=step+1;
@@ -239,7 +238,7 @@ tipy = Float64[]
 push!(tipx, X[2,1])
 push!(tipy, X[2,2])
 tbox = scatter(;x=[0.0, 0.06], y=[-0.06, 0.02], mode="markers", name = "", line_color = "rgb(255, 255, 255)")
-refv = readdlm("fast_top_ref.txt", ',')
+refv = readdlm(joinpath(@__DIR__, "fast_top_ref.txt"), ',')
 tref = scatter(;x=refv[:, 1], y=refv[:, 2], mode="lines", name = "Reference", line_color = "rgb(15, 15, 15)")
 plots = cat(tbox, tref, scatter(;x=tipx./Length, y=tipy./Length, mode="markers+lines"); dims = 1)
 layout = Layout(;width=500, height=500, xaxis=attr(title="x-coordinate", zeroline=false), yaxis=attr(title="y-coordinate", zeroline=false))
@@ -257,7 +256,7 @@ function updategraph(step, u1, Rfield1)
     end
 end
 
-# integrate(tend, CB, geom0, u0, Rfield0, dchi, v0, updategraph)
+integrate(tend, CB, geom0, u0, Rfield0, dchi, v0, updategraph)
 
 tipx = Float64[]
 tipy = Float64[] 
@@ -274,7 +273,7 @@ projection = attr(type = "orthographic")
 )))
 tbox = plot_space_box([[-1.1*Width -1.1*Width 0]; [1.1*Width 1.1*Width 1.1*Length]])
 tshape0s = plot_solid(fens, fes; x = geom0.values, u = 0.0.*dchi.values[:, 1:3], R = Rfield0.values, facecolor = "rgb(125, 155, 125)", opacity = 0.3);
-tshape0m = plot_midline(fens, fes; x = geom0.values, u = 0.0.*dchi.values[:, 1:3], color = "rgb(125, 155, 125)", lwidth = 4)
+tshape0m = plot_midline(fens, fes; x = geom0.values, u = 0.0.*dchi.values[:, 1:3], color = "rgb(125, 105, 175)", lwidth = 4)
 plots = cat(tbox,  tshape0s, tshape0m; dims = 1)
 pl2 = render(plots; layout = layout)
 sleep(0.5)
@@ -294,4 +293,4 @@ function updateplot(step, u1, Rfield1)
 end
 
 
-integrate(tend, CB, geom0, u0, Rfield0, dchi, v0, updateplot)
+integrate(4.5*tend, CB, geom0, u0, Rfield0, dchi, v0, updateplot)

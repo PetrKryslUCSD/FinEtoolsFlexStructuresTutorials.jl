@@ -20,7 +20,7 @@ in another. The results are compared with analytical expressions.
 
 ## Definition of the basic inputs
 
-The finite element code realize on the basic functionality implemented in this
+The finite element code relies on the basic functionality implemented in this
 package.
 
 ```julia
