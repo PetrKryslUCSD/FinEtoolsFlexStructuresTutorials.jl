@@ -1,4 +1,4 @@
-[Table of contents](https://petrkryslucsd.github.io/FinEtoolsFlexBeams.jl/dev/index.html)
+[Table of contents](https://petrkryslucsd.github.io/FinEtoolsFlexBeamsTutorials.jl/dev/index.html)
 
 # Tutorials
 
