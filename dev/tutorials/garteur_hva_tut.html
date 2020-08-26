@@ -104,26 +104,25 @@ results = Dict()
 results[12] = Dict(&quot;receptance&quot;=&gt;receptance12, &quot;mobility&quot;=&gt;mobility12, &quot;accelerance&quot;=&gt;accelerance12)
 results[112] = Dict(&quot;receptance&quot;=&gt;receptance112, &quot;mobility&quot;=&gt;mobility112, &quot;accelerance&quot;=&gt;accelerance112)
 
-#</code></pre><h2 id="Present-the-results-graphically"><a class="docs-heading-anchor" href="#Present-the-results-graphically">Present the results graphically</a><a id="Present-the-results-graphically-1"></a><a class="docs-heading-anchor-permalink" href="#Present-the-results-graphically" title="Permalink"></a></h2><pre><code class="language-julia">using PlotlyJS</code></pre><p>Plot the amplitude of the response curves. We output two curves. The first for the driving-point FRF:</p><pre><code class="language-julia">quantity = &quot;accelerance&quot;; units = &quot;m/s^2/N&quot;
+#</code></pre><h2 id="Present-the-results-graphically"><a class="docs-heading-anchor" href="#Present-the-results-graphically">Present the results graphically</a><a id="Present-the-results-graphically-1"></a><a class="docs-heading-anchor-permalink" href="#Present-the-results-graphically" title="Permalink"></a></h2><pre><code class="language-julia">using Gnuplot</code></pre><p>Plot the amplitude of the response curves. We output two curves. The first for the driving-point FRF:</p><pre><code class="language-julia">quantity = &quot;accelerance&quot;; units = &quot;m/s^2/N&quot;
 outputat = 12
 y = abs.(results[outputat][quantity]) / phun(units)
-tc12 = scatter(;x=frequencies, y=y, mode=&quot;lines&quot;, name = &quot;output@$(outputat)&quot;, line_color = &quot;rgb(15, 15, 215)&quot;)</code></pre><p>The second for the cross transfer:</p><pre><code class="language-julia">outputat = 112
+@gp  &quot;set terminal wxt 0 &quot;  :-
+@gp  :- frequencies y &quot; lw 2 lc rgb &#39;blue&#39; with lines title &#39;output at $(outputat)&#39; &quot;  :-</code></pre><p>The second for the cross transfer:</p><pre><code class="language-julia">outputat = 112
 y = abs.(results[outputat][quantity]) / phun(units)
-tc112 = scatter(;x=frequencies, y=y, mode=&quot;lines&quot;, name = &quot;output@$(outputat)&quot;, line_color = &quot;rgb(215, 15, 15)&quot;)</code></pre><p>Set up the layout:</p><pre><code class="language-julia">layout = Layout(;width=650, height=400, xaxis=attr(title=&quot;Frequency [Hz]&quot;, type = &quot;linear&quot;), yaxis=attr(title=&quot;abs(H) [$(units)]&quot;, type = &quot;log&quot;), title = &quot;Force@$(forceat), $(quantity)&quot;)</code></pre><p>Plot the graphs:</p><pre><code class="language-julia">plots = cat(tc12, tc112; dims = 1)
-pl = plot(plots, layout; options = Dict(
-        :showSendToCloud=&gt;true,
-        :plotlyServerURL=&gt;&quot;https://chart-studio.plotly.com&quot;
-        ))
-display(pl)</code></pre><p>Plot the phase shift of the response curves. Again we output two curves, the first for the driving-point FRF:</p><pre><code class="language-julia">outputat = 12
+@gp  :- frequencies y &quot; lw 2 lc rgb &#39;red&#39; with lines title &#39;output at $(outputat)&#39; &quot;  :-
+@gp  :- &quot;set logscale y&quot; :-
+@gp  :- &quot;set xlabel &#39;Frequency [Hz]&#39;&quot; :-
+@gp  :- &quot;set ylabel &#39;abs(H) [$(units)]&#39;&quot; :-
+@gp  :- &quot;set title &#39;Force at $(forceat), $(quantity)&#39;&quot;</code></pre><p>Plot the phase shift of the response curves. Again we output two curves, the first for the driving-point FRF:</p><pre><code class="language-julia">outputat = 12
 y = atan.(imag(results[outputat][quantity]), real(results[outputat][quantity]))/pi*180
-tc12 = scatter(;x=frequencies, y=y, mode=&quot;lines&quot;, name = &quot;output@$(outputat)&quot;, line_color = &quot;rgb(15, 15, 215)&quot;)</code></pre><p>The second for the cross transfer:</p><pre><code class="language-julia">outputat = 112
+@gp  &quot;set terminal wxt 1 &quot;  :-
+@gp  :- frequencies y &quot; lw 2 lc rgb &#39;blue&#39; with lines title &#39;output at $(outputat)&#39; &quot;  :-</code></pre><p>The second for the cross transfer:</p><pre><code class="language-julia">outputat = 112
 y = atan.(imag(results[outputat][quantity]), real(results[outputat][quantity]))/pi*180
-tc112 = scatter(;x=frequencies, y=y, mode=&quot;lines&quot;, name = &quot;output@$(outputat)&quot;, line_color = &quot;rgb(215, 15, 15)&quot;)</code></pre><p>Set up the layout:</p><pre><code class="language-julia">layout = Layout(;width=650, height=400, xaxis=attr(title=&quot;Frequency [Hz]&quot;, type = &quot;linear&quot;), yaxis=attr(title=&quot;Phase shift [deg]&quot;, type = &quot;linear&quot;), title = &quot;Force@$(forceat), $(quantity)&quot;, yaxis_range=[-180, 180])</code></pre><p>Plot the graphs:</p><pre><code class="language-julia">plots = cat(tc12, tc112; dims = 1)
-pl = plot(plots, layout; options = Dict(
-        :showSendToCloud=&gt;true,
-        :plotlyServerURL=&gt;&quot;https://chart-studio.plotly.com&quot;
-        ))
-display(pl)
+@gp  :- frequencies y &quot; lw 2 lc rgb &#39;red&#39; with lines title &#39;output at $(outputat)&#39; &quot;  :-
+@gp  :- &quot;set xlabel &#39;Frequency [Hz]&#39;&quot; :-
+@gp  :- &quot;set ylabel &#39;Phase shift [deg]&#39;&quot; :-
+@gp  :- &quot;set title &#39;Force at $(forceat), $(quantity)&#39;&quot;
 
 
-true</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 24 August 2020 21:00">Monday 24 August 2020</span>. Using Julia version 1.5.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+true</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 26 August 2020 14:58">Wednesday 26 August 2020</span>. Using Julia version 1.5.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

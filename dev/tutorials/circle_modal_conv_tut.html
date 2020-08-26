@@ -16,12 +16,12 @@ nu = 0.3;</code></pre><p>The mass density is</p><pre><code class="language-julia
 mtype = MASS_TYPE_CONSISTENT_WITH_ROTATION_INERTIA
 mtype = MASS_TYPE_LUMPED_DIAGONAL_NO_ROTATION_INERTIA
 mtype = MASS_TYPE_LUMPED_DIAGONAL_WITH_ROTATION_INERTIA</code></pre><p>Here are the formulas for the first two natural frequencies, obtained analytically with the shear flexibility  neglected. The parameters of the structure:</p><pre><code class="language-julia">R = radius
-I = cs.parameters(0.0)[4]
+Im = cs.parameters(0.0)[4]
 m = rho * cs.parameters(0.0)[1]</code></pre><p>For instance the the first out of plane mode is listed in this table as</p><pre><code class="language-julia">J = cs.parameters(0.0)[2]
 G = E/2/(1+nu)
 i = 2 # the first non-rigid body mode
-@show i*(i^2-1)/(2*pi*R^2)*sqrt(E*I/m/(i^2+E*I/G/J))</code></pre><p>The first &quot;ovaling&quot; (in-plane) mode is:</p><pre><code class="language-julia">i=2 # the first ovaling mode
-@show i*(i^2-1)/(2*pi*R^2*(i^2+1)^(1/2))*sqrt(E*I/m)
+@show i*(i^2-1)/(2*pi*R^2)*sqrt(E*Im/m/(i^2+E*Im/G/J))</code></pre><p>The first &quot;ovaling&quot; (in-plane) mode is:</p><pre><code class="language-julia">i=2 # the first ovaling mode
+@show i*(i^2-1)/(2*pi*R^2*(i^2+1)^(1/2))*sqrt(E*Im/m)
 
 material = MatDeforElastIso(DeforModelRed3D, rho, E, nu, 0.0)</code></pre><p>We will generate this many elements  along the length of the circular ring.</p><pre><code class="language-julia">results = let
     results = []
@@ -49,22 +49,25 @@ end
 
 @show results
 
-#</code></pre><h2 id="Richardson-extrapolation"><a class="docs-heading-anchor" href="#Richardson-extrapolation">Richardson extrapolation</a><a id="Richardson-extrapolation-1"></a><a class="docs-heading-anchor-permalink" href="#Richardson-extrapolation" title="Permalink"></a></h2><p>Here we will use Richardson extrapolation from the three sets of data. This will allow us to predict the convergence rate and the true solution for each of the three frequencies (or rather the pairs of frequencies, 7 and 8, 9 and 10, and 11 and 12).</p><p>We will immediately set up the convergence plots. We will extrapolate and then compute from that the normalized error to be plotted with respect to the refinement factors (which in this case are 4, 2, and 1). We use the refinement factor as a convenience: we will calculate the element size by dividing the circumference of the ring with a number of elements generated circumferentially.</p><pre><code class="language-julia">using PlotlyJS
-using FinEtools.AlgoBaseModule: richextrapol</code></pre><p>Modes 7 and 8</p><pre><code class="language-julia">sols = [r[1] for r in results]
+#</code></pre><h2 id="Richardson-extrapolation"><a class="docs-heading-anchor" href="#Richardson-extrapolation">Richardson extrapolation</a><a id="Richardson-extrapolation-1"></a><a class="docs-heading-anchor-permalink" href="#Richardson-extrapolation" title="Permalink"></a></h2><p>Here we will use Richardson extrapolation from the three sets of data. This will allow us to predict the convergence rate and the true solution for each of the three frequencies (or rather the pairs of frequencies, 7 and 8, 9 and 10, and 11 and 12).</p><p>We will immediately set up the convergence plots. We will extrapolate and then compute from that the normalized error to be plotted with respect to the refinement factors (which in this case are 4, 2, and 1). We use the refinement factor as a convenience: we will calculate the element size by dividing the circumference of the ring with a number of elements generated circumferentially.</p><pre><code class="language-julia">using FinEtools.AlgoBaseModule: richextrapol
+
+using Gnuplot
+@gp  &quot;set terminal wxt 1 &quot;  :-</code></pre><p>Modes 7 and 8</p><pre><code class="language-julia">sols = [r[1] for r in results]
 resextrap = richextrapol(sols, [4.0, 2.0, 1.0])
 print(&quot;Predicted frequency 7 and 8: $(resextrap[1])\n&quot;)
 errs = abs.(sols .- resextrap[1])./resextrap[1]
-t78 = scatter(;x=2*pi*radius./[80, 160, 320], y=errs, mode=&quot;markers+lines&quot;, name = &quot;Mode 7,8&quot;, line_color = &quot;rgb(155, 15, 15)&quot;)</code></pre><p>Modes 9 and 10</p><pre><code class="language-julia">sols = [r[2] for r in results]
+@gp  :- 2*pi*radius./[80, 160, 320] errs &quot; lw 2 lc rgb &#39;red&#39; with lp title &#39;Mode 7, 8&#39; &quot;  :-</code></pre><p>Modes 9 and 10</p><pre><code class="language-julia">sols = [r[2] for r in results]
 resextrap = richextrapol(sols, [4.0, 2.0, 1.0])
 print(&quot;Predicted frequency 9 and 10: $(resextrap[1])\n&quot;)
 errs = abs.(sols .- resextrap[1])./resextrap[1]
-t910 = scatter(;x=2*pi*radius./[80, 160, 320], y=errs, mode=&quot;markers+lines&quot;, name = &quot;Mode 9,10&quot;, line_color = &quot;rgb(15, 155, 15)&quot;)</code></pre><p>Modes 11 and 12</p><pre><code class="language-julia">sols = [r[3] for r in results]
+@gp  :- 2*pi*radius./[80, 160, 320] errs &quot; lw 2 lc rgb &#39;green&#39; with lp title &#39;Mode 9, 10&#39; &quot;  :-</code></pre><p>Modes 11 and 12</p><pre><code class="language-julia">sols = [r[3] for r in results]
 resextrap = richextrapol(sols, [4.0, 2.0, 1.0])
 print(&quot;Predicted frequency 11 and 12: $(resextrap[1])\n&quot;)
 errs = abs.(sols .- resextrap[1])./resextrap[1]
-t1112 = scatter(;x=2*pi*radius./[80, 160, 320], y=errs, mode=&quot;markers+lines&quot;, name = &quot;Mode 11, 12&quot;, line_color = &quot;rgb(15, 15, 155)&quot;)</code></pre><p>Presents the convergence graph on a log-log scale.  The slope of the error curves are the convergence rate.</p><pre><code class="language-julia">layout = Layout(;width=400, height=300, xaxis=attr(title=&quot;Element size&quot;, type = &quot;log&quot;), yaxis=attr(title=&quot;Normalized error [ND]&quot;, type = &quot;log&quot;), title = &quot;3D: Convergence of modes 7, ..., 12&quot;, xaxis_range=[-2, -1], yaxis_range=[-4, -1])
-pl = plot([t78, t910, t1112], layout; options = Dict(
-        :showSendToCloud=&gt;true,
-        :plotlyServerURL=&gt;&quot;https://chart-studio.plotly.com&quot;
-        ))
-display(pl)</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 24 August 2020 21:00">Monday 24 August 2020</span>. Using Julia version 1.5.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+@gp  :- 2*pi*radius./[80, 160, 320] errs &quot; lw 2 lc rgb &#39;blue&#39; with lp title &#39;Mode 11, 12&#39; &quot;  :-
+
+@gp  :- &quot;set xrange [0.01:0.1]&quot; &quot;set logscale x&quot; :-
+@gp  :- &quot;set logscale y&quot; :-
+@gp  :- &quot;set xlabel &#39;Element size&#39;&quot; :-
+@gp  :- &quot;set ylabel &#39;Normalized error [ND]&#39;&quot; :-
+@gp  :- &quot;set title &#39;Beam: Convergence of modes 7, ..., 12&#39;&quot;</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 26 August 2020 14:58">Wednesday 26 August 2020</span>. Using Julia version 1.5.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
