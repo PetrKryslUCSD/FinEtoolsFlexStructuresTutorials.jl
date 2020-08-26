@@ -72,7 +72,7 @@ alu = MatDeforElastIso(DeforModelRed3D, rho, E, nu, 0.0)
 massless = MatDeforElastIso(DeforModelRed3D, 0.0, alu.E, alu.nu, 0.0)
 
 # This simple function returns material based on the label of the beam elements.
-material(labl) = begin
+getmaterial(labl) = begin
     if labl >= 7 
         return massless
     end
@@ -96,10 +96,6 @@ u0 = NodalField(zeros(size(fens.xyz, 1), 3))
 # `initial_Rfield`
 using FinEtoolsFlexBeams.RotUtilModule: initial_Rfield
 Rfield0 = initial_Rfield(fens)
-# Here we verify the number of nodes and the number of degrees of freedom in the
-# rotation field per node.
-@show nents(Rfield0)
-@show ndofs(Rfield0)
 
 # Finally, this is the displacement and rotation field for incremental changes,
 # incremental displacements and incremental rotations. In total, 6 unknowns per
@@ -160,7 +156,7 @@ Kf, Kd, M = let
     M = spzeros(dchi.nfreedofs, dchi.nfreedofs)
     for fes in fesa
         labl  = fes.label[1]
-        femm = CB.FEMMCorotBeam(IntegDomain(fes, GaussRule(1, 2)), material(labl));
+        femm = CB.FEMMCorotBeam(IntegDomain(fes, GaussRule(1, 2)), getmaterial(labl));
         if labl == 7 # connectors representing the damping layer
             Kd += CB.stiffness(femm, geom0, u0, Rfield0, dchi);
         else
@@ -181,13 +177,13 @@ using FinEtoolsFlexBeams.FEMMPointMassModule
 PM = FEMMPointMassModule
 
 # There is a sensor on the tail.
-femmcm1 =  PM.FEMMPointMass(IntegDomain(FESetP1(reshape([sensors[202];], 1, 1)), PointRule()), FFltMat(2*L*L/5*L/5*2*rho*I(3)));
+femmcm1 =  PM.FEMMPointMass(IntegDomain(FESetP1(reshape(sensors[202], 1, 1)), PointRule()), FFltMat(2*L*L/5*L/5*2*rho*LinearAlgebra.I(3)));
 
 # These are the forward/interior locations on the wing drums where the
 # compensation masses are attached.
 mass1n = selectnode(fens; box = initbox!(Float64[], vec([1.8*L 9.2*L .96*L])), inflate = tolerance)
 mass2n = selectnode(fens; box = initbox!(Float64[], vec([1.8*L -9.2*L .96*L])), inflate = tolerance)
-femmcm2 =  PM.FEMMPointMass(IntegDomain(FESetP1(reshape([mass1n; mass2n;], 2, 1)), PointRule()), FFltMat(0.2*phun("kg")*I(3)));
+femmcm2 =  PM.FEMMPointMass(IntegDomain(FESetP1(reshape([mass1n; mass2n;], 2, 1)), PointRule()), FFltMat(0.2*phun("kg")*LinearAlgebra.I(3)));
 
 Mp = PM.mass(femmcm1, geom0, u0, Rfield0, dchi) + PM.mass(femmcm2, geom0, u0, Rfield0, dchi);
 
@@ -204,7 +200,7 @@ BS = FEMMPointGroundedSpringModule
 
 # There are three suspension points at the top of the fuselage. We assume that these bungee supports exert only reaction in the vertical direction.
 femmbs =  BS.FEMMPointGroundedSpring(IntegDomain(FESetP1(reshape([suspln; susprn; suspbn;], 3, 1)), PointRule()), 
-FFltMat([bungeecoefficient*[0;0;1]*[0;0;1]' 0*I(3); 0*I(3) 0*I(3)]));
+FFltMat([bungeecoefficient*[0;0;1]*[0;0;1]' 0*LinearAlgebra.I(3); 0*LinearAlgebra.I(3) 0*LinearAlgebra.I(3)]));
 
 Kb = BS.stiffness(femmbs, geom0, u0, Rfield0, dchi)
 

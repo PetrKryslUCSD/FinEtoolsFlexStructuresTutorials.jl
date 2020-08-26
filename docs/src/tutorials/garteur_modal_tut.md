@@ -103,7 +103,7 @@ massless = MatDeforElastIso(DeforModelRed3D, 0.0, alu.E, alu.nu, 0.0)
 This simple function returns material based on the label of the beam elements.
 
 ```julia
-material(labl) = begin
+getmaterial(labl) = begin
     if labl == 6
         return layer
     elseif labl == 7 || labl == 8
@@ -220,7 +220,7 @@ K, M = let
     M = spzeros(dchi.nfreedofs, dchi.nfreedofs)
     for fes in fesa
         labl  = fes.label[1]
-        femm = CB.FEMMCorotBeam(IntegDomain(fes, GaussRule(1, 2)), material(labl));
+        femm = CB.FEMMCorotBeam(IntegDomain(fes, GaussRule(1, 2)), getmaterial(labl));
         K += CB.stiffness(femm, geom0, u0, Rfield0, dchi);
         M += CB.mass(femm, geom0, u0, Rfield0, dchi);
     end
@@ -242,7 +242,7 @@ PM = FEMMPointMassModule
 There is at the sensor on the tail.
 
 ```julia
-femmcm1 =  PM.FEMMPointMass(IntegDomain(FESetP1(reshape([sensor202n;], 1, 1)), PointRule()), FFltMat(2*L*L/5*L/5*2*rho*I(3)));
+femmcm1 =  PM.FEMMPointMass(IntegDomain(FESetP1(reshape([sensor202n;], 1, 1)), PointRule()), FFltMat(2*L*L/5*L/5*2*rho*LinearAlgebra.I(3)));
 ```
 
 These are the forward/interior locations on the wing drums.
@@ -250,7 +250,7 @@ These are the forward/interior locations on the wing drums.
 ```julia
 mass1n = selectnode(fens; box = initbox!(Float64[], vec([1.8*L 9.2*L .96*L])), inflate = tolerance)
 mass2n = selectnode(fens; box = initbox!(Float64[], vec([1.8*L -9.2*L .96*L])), inflate = tolerance)
-femmcm2 =  PM.FEMMPointMass(IntegDomain(FESetP1(reshape([mass1n; mass2n;], 2, 1)), PointRule()), FFltMat(0.2*phun("kg")*I(3)));
+femmcm2 =  PM.FEMMPointMass(IntegDomain(FESetP1(reshape([mass1n; mass2n;], 2, 1)), PointRule()), FFltMat(0.2*phun("kg")*LinearAlgebra.I(3)));
 
 Mp = PM.mass(femmcm1, geom0, u0, Rfield0, dchi) + PM.mass(femmcm2, geom0, u0, Rfield0, dchi);
 
@@ -271,7 +271,7 @@ these bungee supports exert only reaction in the vertical direction.
 
 ```julia
 femmbs =  BS.FEMMPointGroundedSpring(IntegDomain(FESetP1(reshape([suspln; susprn; suspbn;], 3, 1)), PointRule()),
-FFltMat([bungeecoefficient*[0;0;1]*[0;0;1]' 0*I(3); 0*I(3) 0*I(3)]));
+FFltMat([bungeecoefficient*[0;0;1]*[0;0;1]' 0*LinearAlgebra.I(3); 0*LinearAlgebra.I(3) 0*LinearAlgebra.I(3)]));
 
 Kb = BS.stiffness(femmbs, geom0, u0, Rfield0, dchi)
 

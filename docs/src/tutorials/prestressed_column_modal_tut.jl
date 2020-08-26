@@ -230,7 +230,8 @@ freqs = let freqs =[];
 end
 
 # Show the normalized force and the fundamental frequencies.
-@show Ps./PEul, freqs
+sigdig(n) = round(n * 1000) / 1000
+@show sigdig.(Ps./PEul), sigdig.(freqs)
 
 ##
 # ## Present a plot

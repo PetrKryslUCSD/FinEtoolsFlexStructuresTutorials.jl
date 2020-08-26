@@ -170,7 +170,7 @@ clamped end of the frame).
 ```julia
 lfp = linearspace(0.0, 68000.0, 400)
 fsp = let
-    fsp = []
+    fsp = Float64[]
     for load_factor in lfp
         evals, evecs, nconv = eigs(K + load_factor .* Kg, M; nev=neigvs, which=:SM);
         f = evals[1] > 0 ? sqrt(evals[1]) / (2 * pi) : 0;
@@ -187,7 +187,7 @@ also buckle the frame, but the magnitude is higher.
 ```julia
 lfm = linearspace(-109000.0, 0.0, 400)
 fsm = let
-    fsm = []
+    fsm = Float64[]
     for load_factor in lfm
         evals, evecs, nconv = eigs(K + load_factor .* Kg, M; nev=neigvs, which=:SM);
         f = evals[1] > 0 ? sqrt(evals[1]) / (2 * pi) : 0;
@@ -209,9 +209,10 @@ We concatenate the ranges for the load factors and the calculated fundamental
 frequencies and present them in a single plot.
 
 ```julia
+Gnuplot.gpexec("reset session")
 @gp  "set terminal wxt 0 "  :-
 
-@gp  :- cat(lfp, lfm; dims=1) cat(fsp, fsm; dims=1) " lw 2 lc rgb 'red' with p title 'Fundamental frequency' "  :-
+@gp  :- cat(collect(lfp), collect(lfm); dims=1) cat(fsp, fsm; dims=1) " lw 2 lc rgb 'red' with p title 'Fundamental frequency' "  :-
 
 @gp  :- "set xlabel 'Loading factor P'" :-
 @gp  :- "set ylabel 'Frequency(P) [Hz]'" :-
