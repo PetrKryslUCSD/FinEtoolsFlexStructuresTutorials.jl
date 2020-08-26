@@ -91,18 +91,18 @@ mtype = MASS_TYPE_LUMPED_DIAGONAL_WITH_ROTATION_INERTIA
 # analytically with the shear flexibility  neglected. The parameters of the
 # structure:
 R = radius
-I = cs.parameters(0.0)[4]
+Im = cs.parameters(0.0)[4]
 m = rho * cs.parameters(0.0)[1]
 
 # For instance the the first out of plane mode is listed in this table as
 J = cs.parameters(0.0)[2]
 G = E/2/(1+nu)
 i = 2 # the first non-rigid body mode
-@show i*(i^2-1)/(2*pi*R^2)*sqrt(E*I/m/(i^2+E*I/G/J))
+@show i*(i^2-1)/(2*pi*R^2)*sqrt(E*Im/m/(i^2+E*Im/G/J))
 
 # The first "ovaling" (in-plane) mode is:
 i=2 # the first ovaling mode
-@show i*(i^2-1)/(2*pi*R^2*(i^2+1)^(1/2))*sqrt(E*I/m)
+@show i*(i^2-1)/(2*pi*R^2*(i^2+1)^(1/2))*sqrt(E*Im/m)
 
 material = MatDeforElastIso(DeforModelRed3D, rho, E, nu, 0.0)
 
@@ -162,35 +162,35 @@ end
 # dividing the circumference of the ring with a number of elements generated
 # circumferentially.
 
-using PlotlyJS
+
 using FinEtools.AlgoBaseModule: richextrapol
+
+using Gnuplot
+@gp  "set terminal wxt 1 "  :-
 
 # Modes 7 and 8
 sols = [r[1] for r in results]
 resextrap = richextrapol(sols, [4.0, 2.0, 1.0])  
 print("Predicted frequency 7 and 8: $(resextrap[1])\n")
 errs = abs.(sols .- resextrap[1])./resextrap[1]
-t78 = scatter(;x=2*pi*radius./[80, 160, 320], y=errs, mode="markers+lines", name = "Mode 7,8", line_color = "rgb(155, 15, 15)")
+@gp  :- 2*pi*radius./[80, 160, 320] errs " lw 2 lc rgb 'red' with lp title 'Mode 7, 8' "  :-
 
 # Modes 9 and 10
 sols = [r[2] for r in results]
 resextrap = richextrapol(sols, [4.0, 2.0, 1.0])  
 print("Predicted frequency 9 and 10: $(resextrap[1])\n")
 errs = abs.(sols .- resextrap[1])./resextrap[1]
-t910 = scatter(;x=2*pi*radius./[80, 160, 320], y=errs, mode="markers+lines", name = "Mode 9,10", line_color = "rgb(15, 155, 15)")
+@gp  :- 2*pi*radius./[80, 160, 320] errs " lw 2 lc rgb 'green' with lp title 'Mode 9, 10' "  :-
 
 # Modes 11 and 12
 sols = [r[3] for r in results]
 resextrap = richextrapol(sols, [4.0, 2.0, 1.0])  
 print("Predicted frequency 11 and 12: $(resextrap[1])\n")
 errs = abs.(sols .- resextrap[1])./resextrap[1]
-t1112 = scatter(;x=2*pi*radius./[80, 160, 320], y=errs, mode="markers+lines", name = "Mode 11, 12", line_color = "rgb(15, 15, 155)")
+@gp  :- 2*pi*radius./[80, 160, 320] errs " lw 2 lc rgb 'blue' with lp title 'Mode 11, 12' "  :-
 
-# Presents the convergence graph on a log-log scale.  The slope of the error
-# curves are the convergence rate.
-layout = Layout(;width=400, height=300, xaxis=attr(title="Element size", type = "log"), yaxis=attr(title="Normalized error [ND]", type = "log"), title = "3D: Convergence of modes 7, ..., 12", xaxis_range=[-2, -1], yaxis_range=[-4, -1])
-pl = plot([t78, t910, t1112], layout; options = Dict(
-        :showSendToCloud=>true, 
-        :plotlyServerURL=>"https://chart-studio.plotly.com"
-        ))
-display(pl)
+@gp  :- "set xrange [0.01:0.1]" "set logscale x" :-
+@gp  :- "set logscale y" :-
+@gp  :- "set xlabel 'Element size'" :-
+@gp  :- "set ylabel 'Normalized error [ND]'" :-
+@gp  :- "set title 'Beam: Convergence of modes 7, ..., 12'"

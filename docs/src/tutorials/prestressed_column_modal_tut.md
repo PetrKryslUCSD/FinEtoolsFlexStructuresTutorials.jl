@@ -380,13 +380,16 @@ Show the normalized force and the fundamental frequencies.
 ## Present a plot
 
 ```julia
-using PlotlyJS
+using Gnuplot
 
-tc = scatter(;x=Ps./PEul, y=freqs./analyt_freq, mode="markers", name = "Fundamental frequency", line_color = "rgb(15, 15, 15)")
-plots = cat(tc; dims = 1)
-layout = Layout(;width=500, height=500, xaxis=attr(title="P/P_{Euler}", zeroline=true), yaxis=attr(title="Frequency(P)/Frequency(0) [Hz]", zeroline=true))
-pl = plot(plots, layout)
-display(pl)
+
+@gp  "set terminal wxt 0 "  :-
+
+@gp  :- Ps./PEul freqs./analyt_freq " lw 2 lc rgb 'red' with p title 'Fundamental frequency' "  :-
+
+@gp  :- "set xlabel 'P/P_{Euler}'" :-
+@gp  :- "set ylabel 'Frequency(P)/Frequency(0) [Hz]'" :-
+@gp  :- "set title 'Prestressed column'"
 
 true
 ```

@@ -489,7 +489,7 @@ results[112] = Dict("receptance"=>receptance112, "mobility"=>mobility112, "accel
 ## Present the results graphically
 
 ```julia
-using PlotlyJS
+using Gnuplot
 ```
 
 Plot the amplitude of the response curves. We output two curves.
@@ -499,7 +499,8 @@ The first for the driving-point FRF:
 quantity = "accelerance"; units = "m/s^2/N"
 outputat = 12
 y = abs.(results[outputat][quantity]) / phun(units)
-tc12 = scatter(;x=frequencies, y=y, mode="lines", name = "output@$(outputat)", line_color = "rgb(15, 15, 215)")
+@gp  "set terminal wxt 0 "  :-
+@gp  :- frequencies y " lw 2 lc rgb 'blue' with lines title 'output at $(outputat)' "  :-
 ```
 
 The second for the cross transfer:
@@ -507,24 +508,11 @@ The second for the cross transfer:
 ```julia
 outputat = 112
 y = abs.(results[outputat][quantity]) / phun(units)
-tc112 = scatter(;x=frequencies, y=y, mode="lines", name = "output@$(outputat)", line_color = "rgb(215, 15, 15)")
-```
-
-Set up the layout:
-
-```julia
-layout = Layout(;width=650, height=400, xaxis=attr(title="Frequency [Hz]", type = "linear"), yaxis=attr(title="abs(H) [$(units)]", type = "log"), title = "Force@$(forceat), $(quantity)")
-```
-
-Plot the graphs:
-
-```julia
-plots = cat(tc12, tc112; dims = 1)
-pl = plot(plots, layout; options = Dict(
-        :showSendToCloud=>true,
-        :plotlyServerURL=>"https://chart-studio.plotly.com"
-        ))
-display(pl)
+@gp  :- frequencies y " lw 2 lc rgb 'red' with lines title 'output at $(outputat)' "  :-
+@gp  :- "set logscale y" :-
+@gp  :- "set xlabel 'Frequency [Hz]'" :-
+@gp  :- "set ylabel 'abs(H) [$(units)]'" :-
+@gp  :- "set title 'Force at $(forceat), $(quantity)'"
 ```
 
 Plot the phase shift of the response curves. Again we output two curves,
@@ -533,7 +521,8 @@ the first for the driving-point FRF:
 ```julia
 outputat = 12
 y = atan.(imag(results[outputat][quantity]), real(results[outputat][quantity]))/pi*180
-tc12 = scatter(;x=frequencies, y=y, mode="lines", name = "output@$(outputat)", line_color = "rgb(15, 15, 215)")
+@gp  "set terminal wxt 1 "  :-
+@gp  :- frequencies y " lw 2 lc rgb 'blue' with lines title 'output at $(outputat)' "  :-
 ```
 
 The second for the cross transfer:
@@ -541,24 +530,10 @@ The second for the cross transfer:
 ```julia
 outputat = 112
 y = atan.(imag(results[outputat][quantity]), real(results[outputat][quantity]))/pi*180
-tc112 = scatter(;x=frequencies, y=y, mode="lines", name = "output@$(outputat)", line_color = "rgb(215, 15, 15)")
-```
-
-Set up the layout:
-
-```julia
-layout = Layout(;width=650, height=400, xaxis=attr(title="Frequency [Hz]", type = "linear"), yaxis=attr(title="Phase shift [deg]", type = "linear"), title = "Force@$(forceat), $(quantity)", yaxis_range=[-180, 180])
-```
-
-Plot the graphs:
-
-```julia
-plots = cat(tc12, tc112; dims = 1)
-pl = plot(plots, layout; options = Dict(
-        :showSendToCloud=>true,
-        :plotlyServerURL=>"https://chart-studio.plotly.com"
-        ))
-display(pl)
+@gp  :- frequencies y " lw 2 lc rgb 'red' with lines title 'output at $(outputat)' "  :-
+@gp  :- "set xlabel 'Frequency [Hz]'" :-
+@gp  :- "set ylabel 'Phase shift [deg]'" :-
+@gp  :- "set title 'Force at $(forceat), $(quantity)'"
 
 
 true

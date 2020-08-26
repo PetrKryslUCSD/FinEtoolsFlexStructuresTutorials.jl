@@ -209,8 +209,10 @@ dividing the circumference of the ring with a number of elements generated
 circumferentially.
 
 ```julia
-using PlotlyJS
 using FinEtools.AlgoBaseModule: richextrapol
+
+using Gnuplot
+@gp  "set terminal wxt 0 "  :-
 ```
 
 Modes 7 and 8
@@ -219,8 +221,8 @@ Modes 7 and 8
 sols = [r[1] for r in results]
 resextrap = richextrapol(sols, [4.0, 2.0, 1.0])
 print("Predicted frequency 7 and 8: $(resextrap[1])\n")
-errs = (sols .- resextrap[1])./resextrap[1]
-t78 = scatter(;x=2*pi*radius./[80, 160, 320], y=errs, mode="markers+lines", name = "Mode 7,8", line_color = "rgb(155, 15, 15)")
+errs = abs.(sols .- resextrap[1])./resextrap[1]
+@gp  :- 2*pi*radius./[80, 160, 320] errs " lw 2 lc rgb 'red' with lp title 'Mode 7, 8' "  :-
 ```
 
 Modes 9 and 10
@@ -229,8 +231,8 @@ Modes 9 and 10
 sols = [r[2] for r in results]
 resextrap = richextrapol(sols, [4.0, 2.0, 1.0])
 print("Predicted frequency 9 and 10: $(resextrap[1])\n")
-errs = (sols .- resextrap[1])./resextrap[1]
-t910 = scatter(;x=2*pi*radius./[80, 160, 320], y=errs, mode="markers+lines", name = "Mode 9,10", line_color = "rgb(15, 155, 15)")
+errs = abs.(sols .- resextrap[1])./resextrap[1]
+@gp  :- 2*pi*radius./[80, 160, 320] errs " lw 2 lc rgb 'green' with lp title 'Mode 9, 10' "  :-
 ```
 
 Modes 11 and 12
@@ -239,20 +241,14 @@ Modes 11 and 12
 sols = [r[3] for r in results]
 resextrap = richextrapol(sols, [4.0, 2.0, 1.0])
 print("Predicted frequency 11 and 12: $(resextrap[1])\n")
-errs = (sols .- resextrap[1])./resextrap[1]
-t1112 = scatter(;x=2*pi*radius./[80, 160, 320], y=errs, mode="markers+lines", name = "Mode 11, 12", line_color = "rgb(15, 15, 155)")
-```
+errs = abs.(sols .- resextrap[1])./resextrap[1]
+@gp  :- 2*pi*radius./[80, 160, 320] errs " lw 2 lc rgb 'blue' with lp title 'Mode 11, 12' "  :-
 
-Presents the convergence graph on a log-log scale.  The slope of the error
-curves are the convergence rate.
-
-```julia
-layout = Layout(;width=400, height=300, xaxis=attr(title="Element size", type = "log"), yaxis=attr(title="Normalized error [ND]", type = "log"), title = "3D: Convergence of modes 7, ..., 12", xaxis_range=[-2, -1], yaxis_range=[-3, -0])
-pl = plot([t78, t910, t1112], layout; options = Dict(
-        :showSendToCloud=>true,
-        :plotlyServerURL=>"https://chart-studio.plotly.com"
-        ))
-display(pl)
+@gp  :- "set xrange [0.01:0.1]" "set logscale x" :-
+@gp  :- "set logscale y" :-
+@gp  :- "set xlabel 'Element size'" :-
+@gp  :- "set ylabel 'Normalized error [ND]'" :-
+@gp  :- "set title '3D: Convergence of modes 7, ..., 12'"
 ```
 
 ---

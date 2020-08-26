@@ -202,18 +202,20 @@ end
 ## Plot of the fundamental frequency is it depends on the loading factor
 
 ```julia
-using PlotlyJS
+using Gnuplot
 ```
 
 We concatenate the ranges for the load factors and the calculated fundamental
 frequencies and present them in a single plot.
 
 ```julia
-tcp = scatter(;x=cat(lfp, lfm; dims=1), y=cat(fsp, fsm; dims=1), mode="markers", name = "Fundamental frequency", line_color = "rgb(15, 15, 15)")
-plots = cat(tcp; dims = 1)
-layout = Layout(;width=500, height=500, xaxis=attr(title="Loading factor P", zeroline=true), yaxis=attr(title="Frequency(P) [Hz]", zeroline=true))
-pl = plot(plots, layout)
-display(pl)
+@gp  "set terminal wxt 0 "  :-
+
+@gp  :- cat(lfp, lfm; dims=1) cat(fsp, fsm; dims=1) " lw 2 lc rgb 'red' with p title 'Fundamental frequency' "  :-
+
+@gp  :- "set xlabel 'Loading factor P'" :-
+@gp  :- "set ylabel 'Frequency(P) [Hz]'" :-
+@gp  :- "set title 'Frame fundamental frequency'"
 ```
 
 Clearly, the curve giving the dependence of the fundamental frequency on the
@@ -231,6 +233,7 @@ Here we visualize the fundamental vibration modes for different values of the
 loading factor.
 
 ```julia
+using PlotlyJS
 using FinEtoolsFlexBeams.VisUtilModule: plot_space_box, plot_solid, render, react!, default_layout_3d, save_to_json
 scale = 0.005
 
