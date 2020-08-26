@@ -35,7 +35,7 @@ update_rotation_field!(Rfield1, dchi)</code></pre><p>The static deflection is no
 
 #</code></pre><h2 id="Solution-of-the-eigenvalue-free-vibration-problem"><a class="docs-heading-anchor" href="#Solution-of-the-eigenvalue-free-vibration-problem">Solution of the eigenvalue free-vibration problem</a><a id="Solution-of-the-eigenvalue-free-vibration-problem-1"></a><a class="docs-heading-anchor-permalink" href="#Solution-of-the-eigenvalue-free-vibration-problem" title="Permalink"></a></h2><pre><code class="language-julia">using Arpack</code></pre><p>We will solve for this many natural frequencies. Then, since they are ordered by magnitude, we will pick the fundamental by taking the first from the list.</p><pre><code class="language-julia">neigvs = 4</code></pre><p>First we will  sweep through the loading factors that are positive, meaning the force points in the direction in which it was defined (towards the clamped end of the frame).</p><pre><code class="language-julia">lfp = linearspace(0.0, 68000.0, 400)
 fsp = let
-    fsp = []
+    fsp = Float64[]
     for load_factor in lfp
         evals, evecs, nconv = eigs(K + load_factor .* Kg, M; nev=neigvs, which=:SM);
         f = evals[1] &gt; 0 ? sqrt(evals[1]) / (2 * pi) : 0;
@@ -44,7 +44,7 @@ fsp = let
     fsp
 end</code></pre><p>Next, we will sweep through arrange of negative load factors: this simply turns the force around so that it points away from the clamped end. This can also buckle the frame, but the magnitude is higher.</p><pre><code class="language-julia">lfm = linearspace(-109000.0, 0.0, 400)
 fsm = let
-    fsm = []
+    fsm = Float64[]
     for load_factor in lfm
         evals, evecs, nconv = eigs(K + load_factor .* Kg, M; nev=neigvs, which=:SM);
         f = evals[1] &gt; 0 ? sqrt(evals[1]) / (2 * pi) : 0;
@@ -53,9 +53,10 @@ fsm = let
     fsm
 end
 
-#</code></pre><h2 id="Plot-of-the-fundamental-frequency-is-it-depends-on-the-loading-factor"><a class="docs-heading-anchor" href="#Plot-of-the-fundamental-frequency-is-it-depends-on-the-loading-factor">Plot of the fundamental frequency is it depends on the loading factor</a><a id="Plot-of-the-fundamental-frequency-is-it-depends-on-the-loading-factor-1"></a><a class="docs-heading-anchor-permalink" href="#Plot-of-the-fundamental-frequency-is-it-depends-on-the-loading-factor" title="Permalink"></a></h2><pre><code class="language-julia">using Gnuplot</code></pre><p>We concatenate the ranges for the load factors and the calculated fundamental frequencies and present them in a single plot.</p><pre><code class="language-julia">@gp  &quot;set terminal wxt 0 &quot;  :-
+#</code></pre><h2 id="Plot-of-the-fundamental-frequency-is-it-depends-on-the-loading-factor"><a class="docs-heading-anchor" href="#Plot-of-the-fundamental-frequency-is-it-depends-on-the-loading-factor">Plot of the fundamental frequency is it depends on the loading factor</a><a id="Plot-of-the-fundamental-frequency-is-it-depends-on-the-loading-factor-1"></a><a class="docs-heading-anchor-permalink" href="#Plot-of-the-fundamental-frequency-is-it-depends-on-the-loading-factor" title="Permalink"></a></h2><pre><code class="language-julia">using Gnuplot</code></pre><p>We concatenate the ranges for the load factors and the calculated fundamental frequencies and present them in a single plot.</p><pre><code class="language-julia">Gnuplot.gpexec(&quot;reset session&quot;)
+@gp  &quot;set terminal wxt 0 &quot;  :-
 
-@gp  :- cat(lfp, lfm; dims=1) cat(fsp, fsm; dims=1) &quot; lw 2 lc rgb &#39;red&#39; with p title &#39;Fundamental frequency&#39; &quot;  :-
+@gp  :- cat(collect(lfp), collect(lfm); dims=1) cat(fsp, fsm; dims=1) &quot; lw 2 lc rgb &#39;red&#39; with p title &#39;Fundamental frequency&#39; &quot;  :-
 
 @gp  :- &quot;set xlabel &#39;Loading factor P&#39;&quot; :-
 @gp  :- &quot;set ylabel &#39;Frequency(P) [Hz]&#39;&quot; :-
@@ -89,4 +90,4 @@ vis(loading_factor, evecs[:, 1])</code></pre><p>Increasing the load factor in th
 evals, evecs, nconv = eigs(K + loading_factor .* Kg, M; nev=neigvs, which=:SM);
 vis(loading_factor, evecs[:, 1])
 
-true</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 26 August 2020 14:58">Wednesday 26 August 2020</span>. Using Julia version 1.5.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+true</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 26 August 2020 22:22">Wednesday 26 August 2020</span>. Using Julia version 1.5.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
