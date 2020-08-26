@@ -1,10 +1,5 @@
 # This file is machine-generated - editing it directly is not advised
 
-[[ArgCheck]]
-git-tree-sha1 = "dedbbb2ddb876f899585c4ec4433265e3017215a"
-uuid = "dce04be8-c92d-5529-be00-80e4d2c0e197"
-version = "2.1.0"
-
 [[Arpack]]
 deps = ["Arpack_jll", "Libdl", "LinearAlgebra"]
 git-tree-sha1 = "2ff92b71ba1747c5fdd541f8fc87736d82f40ec9"
@@ -26,12 +21,6 @@ version = "0.1.0"
 [[Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 
-[[BenchmarkTools]]
-deps = ["JSON", "Logging", "Printf", "Statistics", "UUIDs"]
-git-tree-sha1 = "9e62e66db34540a0c919d72172cc2f642ac71260"
-uuid = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
-version = "0.5.0"
-
 [[BinDeps]]
 deps = ["Libdl", "Pkg", "SHA", "URIParser", "Unicode"]
 git-tree-sha1 = "46cf2c1668ad07aba5a9d331bdeea994a1f13856"
@@ -50,6 +39,12 @@ git-tree-sha1 = "434893c1f9e9ce59be3f114641e99ef84c4d8f1a"
 uuid = "ad839575-38b3-5650-b840-f874b8c74a25"
 version = "0.12.3"
 
+[[ColorSchemes]]
+deps = ["ColorTypes", "Colors", "FixedPointNumbers", "Random", "StaticArrays"]
+git-tree-sha1 = "7a15e3690529fd1042f0ab954dff7445b1efc8a5"
+uuid = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
+version = "3.9.0"
+
 [[ColorTypes]]
 deps = ["FixedPointNumbers", "Random"]
 git-tree-sha1 = "607c0ea16cb32af49ea2976f90c0c5acbca37d21"
@@ -61,17 +56,6 @@ deps = ["ColorTypes", "FixedPointNumbers", "InteractiveUtils", "Reexport"]
 git-tree-sha1 = "008d6bc68dea6beb6303fdc37188cb557391ebf2"
 uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
 version = "0.12.4"
-
-[[Combinatorics]]
-git-tree-sha1 = "08c8b6831dc00bfea825826be0bc8336fc369860"
-uuid = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
-version = "1.0.2"
-
-[[Compat]]
-deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "SHA", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
-git-tree-sha1 = "083e7e5ec3ef443e9dcb6dd3fbcb815879823bfa"
-uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
-version = "3.14.0"
 
 [[CompilerSupportLibraries_jll]]
 deps = ["Libdl", "Pkg"]
@@ -91,10 +75,10 @@ uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
 version = "1.3.0"
 
 [[DataStructures]]
-deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
-git-tree-sha1 = "11bdd2b516918f852fdb9018bac715ff2fbfea76"
+deps = ["InteractiveUtils", "OrderedCollections"]
+git-tree-sha1 = "88d48e133e6d3dd68183309877eac74393daa7eb"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-version = "0.18.0"
+version = "0.17.20"
 
 [[DataValueInterfaces]]
 git-tree-sha1 = "bfc1187b79289637fa0ef6d4436ebdfe6905cbd6"
@@ -104,12 +88,6 @@ version = "1.0.0"
 [[Dates]]
 deps = ["Printf"]
 uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
-
-[[DefaultApplication]]
-deps = ["InteractiveUtils"]
-git-tree-sha1 = "fc2b7122761b22c87fec8bf2ea4dc4563d9f8c24"
-uuid = "3f0dd361-4fe0-5fc6-8523-80b14ec94d85"
-version = "1.0.0"
 
 [[DelimitedFiles]]
 deps = ["Mmap"]
@@ -136,25 +114,25 @@ uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
 [[FinEtools]]
 deps = ["Arpack", "DelimitedFiles", "LinearAlgebra", "LoopVectorization", "Printf", "Random", "SparseArrays", "Statistics", "StatsBase", "Test", "Unicode"]
-git-tree-sha1 = "331ce009490808a0ba67c0ecc6ad7da69ecf037d"
+git-tree-sha1 = "6398eb3dd6435c45dd7da5ab5250188f4ad5b1d0"
 uuid = "91bb5406-6c9a-523d-811d-0644c4229550"
-version = "4.6.1"
+version = "4.7.0"
 
 [[FinEtoolsDeforLinear]]
-deps = ["Arpack", "FinEtools", "LinearAlgebra", "Literate", "PGFPlotsX", "PlotlyJS", "SparseArrays", "Statistics", "StatsBase", "SymRCM", "Test"]
-git-tree-sha1 = "73e775da25150ed727ec18a75692b23ad783bb5e"
+deps = ["Arpack", "FinEtools", "LinearAlgebra", "SparseArrays", "Statistics", "StatsBase", "SymRCM", "Test"]
+git-tree-sha1 = "73510807d09692643975c52928dac7756804fc41"
 repo-rev = "master"
 repo-url = "https://github.com/PetrKryslUCSD/FinEtoolsDeforLinear.jl.git"
 uuid = "e9187c00-8bdd-11e9-1e70-7ba8303116a2"
-version = "0.2.1"
+version = "0.3.0"
 
 [[FinEtoolsFlexBeams]]
 deps = ["Arpack", "Dierckx", "FinEtools", "FinEtoolsDeforLinear", "JSON", "LinearAlgebra", "ORCA", "PlotlyJS", "SparseArrays", "SymRCM", "Test"]
-git-tree-sha1 = "86b6efa84b7c8c9dd9b5d049b34ed5655d240b75"
+git-tree-sha1 = "c716fd2172aaf87c9c44736b4e235ee418f98de7"
 repo-rev = "master"
 repo-url = "https://github.com/PetrKryslUCSD/FinEtoolsFlexBeams.jl.git"
 uuid = "1d6e2fc3-29aa-4bd6-bf55-212bcb8e2840"
-version = "0.2.1"
+version = "0.3.0"
 
 [[FixedPointNumbers]]
 deps = ["Statistics"]
@@ -169,10 +147,10 @@ uuid = "de31a74c-ac4f-5751-b3fd-e18cd04993ca"
 version = "0.5.0"
 
 [[Gnuplot]]
-deps = ["ColorTypes", "Printf", "ReusePatterns", "StatsBase", "StructC14N"]
-git-tree-sha1 = "50ce06a8296acba9a1bdb75978fd80520d45b3fa"
+deps = ["ColorSchemes", "ColorTypes", "Colors", "DataStructures", "REPL", "ReplMaker", "StatsBase", "StructC14N", "Test"]
+git-tree-sha1 = "ec89a32beb38219a3206a99f1ada554b14adca2e"
 uuid = "dc211083-a33a-5b79-959f-2ff34033469d"
-version = "1.0.0"
+version = "1.3.0"
 
 [[HTTP]]
 deps = ["Base64", "Dates", "IniFile", "MbedTLS", "Sockets"]
@@ -274,9 +252,9 @@ version = "2.16.6+1"
 
 [[Missings]]
 deps = ["DataAPI"]
-git-tree-sha1 = "de0a5ce9e5289f27df672ffabef4d1e5861247d5"
+git-tree-sha1 = "ed61674a0864832495ffe0a7e889c0da76b0f4c8"
 uuid = "e1d29d7a-bbdc-5cf2-9ac0-f12de2c33e28"
-version = "0.4.3"
+version = "0.4.4"
 
 [[Mmap]]
 uuid = "a63ad114-7e13-5084-954f-fe012c677804"
@@ -293,17 +271,11 @@ git-tree-sha1 = "5b41f03d63400c290bab4e1a49fb9ac36de1084a"
 uuid = "a975b10e-0019-58db-a62f-e48ff68538c9"
 version = "0.7.0"
 
-[[NodeJS]]
-deps = ["Pkg"]
-git-tree-sha1 = "350ac618f41958e6e0f6b0d2005ae4547eb1b503"
-uuid = "2bd173c7-0d6d-553b-b6af-13a54713934c"
-version = "1.1.1"
-
 [[ORCA]]
-deps = ["HTTP", "JSON", "NodeJS", "PlotlyBase"]
-git-tree-sha1 = "7e5d581e0392fdcc237e80b0f5c12d6d3c6c4848"
+deps = ["PlotlyBase"]
+git-tree-sha1 = "21116b7c215347f1759ebb013f89bce3cafb6b4f"
 uuid = "47be7bcc-f1a6-5447-8b36-7eeeff7534fd"
-version = "0.4.0"
+version = "0.5.0"
 
 [[Observables]]
 git-tree-sha1 = "11832878355305984235a2e90d0e3737383c634c"
@@ -326,18 +298,6 @@ git-tree-sha1 = "293b70ac1780f9584c89268a6e2a560d938a7065"
 uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 version = "1.3.0"
 
-[[PGFPlotsX]]
-deps = ["ArgCheck", "DataStructures", "Dates", "DefaultApplication", "DocStringExtensions", "MacroTools", "Parameters", "Requires"]
-git-tree-sha1 = "96fb16779688e4fd943e3625a6789e978186dfef"
-uuid = "8314cec4-20b6-5062-9cdb-752b83310925"
-version = "1.2.9"
-
-[[Parameters]]
-deps = ["OrderedCollections", "UnPack"]
-git-tree-sha1 = "38b2e970043613c187bd56a995fe2e551821eb4a"
-uuid = "d96e819e-fc66-5662-9728-84c9c7592b0a"
-version = "0.12.1"
-
 [[Parsers]]
 deps = ["Dates", "Test"]
 git-tree-sha1 = "8077624b3c450b15c087944363606a6ba12f925e"
@@ -355,24 +315,20 @@ deps = ["Dates", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "R
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[PlotlyBase]]
-deps = ["Dates", "DelimitedFiles", "DocStringExtensions", "JSON", "LaTeXStrings", "Logging", "Requires", "Statistics", "UUIDs"]
-git-tree-sha1 = "c50438d8affbd77ebcb46f46e276cc66cabc61bd"
+deps = ["Base64", "Dates", "DelimitedFiles", "DocStringExtensions", "JSON", "LaTeXStrings", "Logging", "Pkg", "Requires", "Statistics", "UUIDs"]
+git-tree-sha1 = "b33809ab5a35bf41d1fd7c851b52e32004392933"
 uuid = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
-version = "0.3.1"
+version = "0.4.1"
 
 [[PlotlyJS]]
-deps = ["Blink", "Compat", "DelimitedFiles", "JSExpr", "JSON", "Markdown", "Pkg", "PlotlyBase", "REPL", "Reexport", "Requires", "WebIO"]
-git-tree-sha1 = "086db02717bb2d65e5d8788b038919e9aec5a965"
+deps = ["Blink", "DelimitedFiles", "JSExpr", "JSON", "Markdown", "Pkg", "PlotlyBase", "REPL", "Reexport", "Requires", "WebIO"]
+git-tree-sha1 = "d55517585b572623b61857dadf74e6f53812c2fb"
 uuid = "f0f68f2c-4968-5e81-91da-67840de0976a"
-version = "0.13.1"
+version = "0.14.0"
 
 [[Printf]]
 deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
-
-[[Profile]]
-deps = ["Printf"]
-uuid = "9abbd945-dff8-562f-b5e8-e1ebf5ef1b79"
 
 [[REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets"]
@@ -388,17 +344,17 @@ git-tree-sha1 = "7b1d07f411bc8ddb7977ec7f377b97b158514fe0"
 uuid = "189a3867-3050-52da-a836-e630ba90ab69"
 version = "0.2.0"
 
+[[ReplMaker]]
+deps = ["REPL", "Unicode"]
+git-tree-sha1 = "edfd689abe5ecb8e91083030d5eee7dfec2cb5c0"
+uuid = "b873ce64-0db9-51f5-a568-4457d8e49576"
+version = "0.2.3"
+
 [[Requires]]
 deps = ["UUIDs"]
 git-tree-sha1 = "d37400976e98018ee840e0ca4f9d20baa231dc6b"
 uuid = "ae029012-a4dd-5104-9daa-d747884805df"
 version = "1.0.1"
-
-[[ReusePatterns]]
-deps = ["Combinatorics", "InteractiveUtils", "Statistics", "Test"]
-git-tree-sha1 = "76692fe909161659abb9af58e9ee0cca33172f16"
-uuid = "a39b5e78-89b5-562b-97d8-70689129df0c"
-version = "0.2.0"
 
 [[SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
@@ -418,10 +374,6 @@ version = "0.5.5"
 [[Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 
-[[SharedArrays]]
-deps = ["Distributed", "Mmap", "Random", "Serialization"]
-uuid = "1a1011a3-84de-559e-8e89-a11a2f7dc383"
-
 [[Sockets]]
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
 
@@ -435,15 +387,21 @@ version = "0.3.1"
 deps = ["LinearAlgebra", "Random"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
+[[StaticArrays]]
+deps = ["LinearAlgebra", "Random", "Statistics"]
+git-tree-sha1 = "016d1e1a00fabc556473b07161da3d39726ded35"
+uuid = "90137ffa-7385-5640-81b9-e52037218182"
+version = "0.12.4"
+
 [[Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [[StatsBase]]
 deps = ["DataAPI", "DataStructures", "LinearAlgebra", "Missings", "Printf", "Random", "SortingAlgorithms", "SparseArrays", "Statistics"]
-git-tree-sha1 = "c53e809e63fe5cf5de13632090bc3520649c9950"
+git-tree-sha1 = "a6102b1f364befdb05746f386b67c6b7e3262c45"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
-version = "0.32.0"
+version = "0.33.0"
 
 [[StructC14N]]
 deps = ["Test"]
