@@ -384,7 +384,7 @@ sigdig(n) = round(n * 1000) / 1000
 using Gnuplot
 
 
-@gp  "set terminal wxt 0 "  :-
+@gp  "set terminal windows 0 "  :-
 
 @gp  :- Ps./PEul freqs./analyt_freq " lw 2 lc rgb 'red' with p title 'Fundamental frequency' "  :-
 

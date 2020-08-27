@@ -212,7 +212,7 @@ circumferentially.
 using FinEtools.AlgoBaseModule: richextrapol
 
 using Gnuplot
-@gp  "set terminal wxt 0 "  :-
+@gp  "set terminal windows 0 "  :-
 ```
 
 Modes 7 and 8

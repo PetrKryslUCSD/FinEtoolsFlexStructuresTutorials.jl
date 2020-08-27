@@ -340,7 +340,7 @@ using Gnuplot
 quantity = "accelerance"; units = "m/s^2/N"
 outputat = 12
 y = abs.(results[outputat][quantity]) / phun(units)
-@gp  "set terminal wxt 0 "  :-
+@gp  "set terminal windows 0 "  :-
 @gp  :- frequencies y " lw 2 lc rgb 'blue' with lines title 'output at $(outputat)' "  :-
 
 
@@ -359,7 +359,7 @@ y = abs.(results[outputat][quantity]) / phun(units)
 # the first for the driving-point FRF:
 outputat = 12
 y = atan.(imag(results[outputat][quantity]), real(results[outputat][quantity]))/pi*180 
-@gp  "set terminal wxt 1 "  :-
+@gp  "set terminal windows 1 "  :-
 @gp  :- frequencies y " lw 2 lc rgb 'blue' with lines title 'output at $(outputat)' "  :-
 # The second for the cross transfer:
 outputat = 112

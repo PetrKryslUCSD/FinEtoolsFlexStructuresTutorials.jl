@@ -210,7 +210,7 @@ frequencies and present them in a single plot.
 
 ```julia
 Gnuplot.gpexec("reset session")
-@gp  "set terminal wxt 0 "  :-
+@gp  "set terminal windows 0 "  :-
 
 @gp  :- cat(collect(lfp), collect(lfm); dims=1) cat(fsp, fsm; dims=1) " lw 2 lc rgb 'red' with p title 'Fundamental frequency' "  :-
 
