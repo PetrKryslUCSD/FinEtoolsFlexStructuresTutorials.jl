@@ -120,7 +120,7 @@ version = "4.7.0"
 
 [[FinEtoolsDeforLinear]]
 deps = ["Arpack", "FinEtools", "LinearAlgebra", "SparseArrays", "Statistics", "StatsBase", "SymRCM", "Test"]
-git-tree-sha1 = "73510807d09692643975c52928dac7756804fc41"
+git-tree-sha1 = "2d7b8261de565a39e96ec369b0a1bfd6d38d5dc6"
 repo-rev = "master"
 repo-url = "https://github.com/PetrKryslUCSD/FinEtoolsDeforLinear.jl.git"
 uuid = "e9187c00-8bdd-11e9-1e70-7ba8303116a2"
@@ -128,7 +128,7 @@ version = "0.3.0"
 
 [[FinEtoolsFlexBeams]]
 deps = ["Arpack", "Dierckx", "FinEtools", "FinEtoolsDeforLinear", "JSON", "LinearAlgebra", "ORCA", "PlotlyJS", "SparseArrays", "SymRCM", "Test"]
-git-tree-sha1 = "c716fd2172aaf87c9c44736b4e235ee418f98de7"
+git-tree-sha1 = "61575e526e518fc9422d0038785313af2de1186d"
 repo-rev = "master"
 repo-url = "https://github.com/PetrKryslUCSD/FinEtoolsFlexBeams.jl.git"
 uuid = "1d6e2fc3-29aa-4bd6-bf55-212bcb8e2840"
@@ -261,9 +261,9 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[Mustache]]
 deps = ["Printf", "Tables"]
-git-tree-sha1 = "3d07128636eddde25a17aced63dbcedbce71a79d"
+git-tree-sha1 = "17e60d71d720c33ac2fbac21298ee495bae27587"
 uuid = "ffc61752-8dc7-55ee-8c37-f3e9cdd09e70"
-version = "1.0.4"
+version = "1.0.5"
 
 [[Mux]]
 deps = ["AssetRegistry", "Base64", "HTTP", "Hiccup", "Lazy", "Pkg", "Sockets", "Test", "WebSockets"]
@@ -399,9 +399,9 @@ uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [[StatsBase]]
 deps = ["DataAPI", "DataStructures", "LinearAlgebra", "Missings", "Printf", "Random", "SortingAlgorithms", "SparseArrays", "Statistics"]
-git-tree-sha1 = "a6102b1f364befdb05746f386b67c6b7e3262c45"
+git-tree-sha1 = "d72a47c47c522e283db774fc8c459dd5ed773710"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
-version = "0.33.0"
+version = "0.33.1"
 
 [[StructC14N]]
 deps = ["Test"]
