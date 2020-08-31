@@ -13,7 +13,7 @@
 # for Aeronautical Research and Technology in EURope (GARTEUR).  
 # The test-bed was designed and manufactured by ONERA, France.
 
-# ![](IMAC97photo.png)
+# <img src="IMAC97photo.png" alt="Experimental set up" width="400"/>
 
 # ### References
 
