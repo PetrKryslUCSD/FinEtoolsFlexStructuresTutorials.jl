@@ -1,5 +1,7 @@
 # # GARTEUR SM-AG19 Testbed: Construction of the geometry
 
+# Source code: [`garteur_geometry_vis_tut.jl`](garteur_geometry_vis_tut.jl)
+
 # ## Description
 
 # This virtual test application is based on the test article  

@@ -1,5 +1,7 @@
 # # Modal analysis of a free-floating steel circle: three-dimensional solid model
 
+# Source code: [`circle_3d_modal_conv_tut.jl`](circle_3d_modal_conv_tut.jl)
+
 # ## Description
 
 # Vibration analysis of a free-floating steel ring. This is a

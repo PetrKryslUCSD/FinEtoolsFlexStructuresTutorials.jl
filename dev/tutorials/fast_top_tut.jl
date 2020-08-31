@@ -1,5 +1,7 @@
 # #  Fast Lagrangian top.
 
+# Source code: [`fast_top_tut.jl`](fast_top_tut.jl)
+
 # ## Description
 
 # Fast-spinning Lagrange  top simulated by a beam model. The reference

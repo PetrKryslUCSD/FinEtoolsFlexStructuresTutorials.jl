@@ -1,5 +1,7 @@
 # # Prestressed simply-supported column modal analysis
 
+# Source code: [`prestressed_column_modal_tut.jl`](prestressed_column_modal_tut.jl)
+
 # ## Description
 
 # Vibration analysis of a simply supported column loaded with axial force. 
