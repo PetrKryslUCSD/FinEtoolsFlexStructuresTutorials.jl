@@ -13,7 +13,7 @@ Structures and Materials Action Group (SM-AG19) of the Group
 for Aeronautical Research and Technology in EURope (GARTEUR).
 The test-bed was designed and manufactured by ONERA, France.
 
-![](IMAC97photo.jpg)
+![](IMAC97photo.png)
 
 ### References
 
