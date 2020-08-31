@@ -9,10 +9,13 @@
 for basic operations on finite element meshes. [`FinEtoolsFlexBeams`](https://github.com/PetrKryslUCSD/FinEtoolsFlexBeams.jl.git) is a
 package using `FinEtools` to solve linear stress analysis problems. This package provides tutorials for  [`FinEtoolsFlexBeams`](https://github.com/PetrKryslUCSD/FinEtoolsFlexBeams.jl.git).
 
-## News
 
-- 08/20/2020: Created.
+## Table of contents
 
+[List of tutorials](docs/src/tutorials/tutorials.md). 
+
+In VS Code the "Markdown: Open preview" command from the "Markdown Preview Enhanced" 
+extension  can be used for navigation. 
 
 ## How to work with the tutorials
 
@@ -32,4 +35,8 @@ Activate and instantiate the environment:
 The tutorial source files are located in the `src` folder.
 Locate the one you want, loaded in your IDE or editor of preference, and execute away.
 
+
+## News
+
+- 08/20/2020: Created.
 

@@ -1,5 +1,7 @@
 # Modal analysis of a free-floating steel circle
 
+Source code: [`circle_modal_conv_tut.jl`](circle_modal_conv_tut.jl)
+
 ## Description
 
 Vibration analysis of a free-floating steel ring. This is a

@@ -1,5 +1,7 @@
 # Modal analysis of a free-floating steel circle
 
+Source code: [`circle_modal_tut.jl`](circle_modal_tut.jl)
+
 ## Description
 
 Vibration analysis of a beam simply supported in one plane, and clamped in

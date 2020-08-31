@@ -2,6 +2,7 @@
 
 # Tutorials
 
+## Dynamics
 - [Beam vibration](beam_modal_tut.md)
 - [Aircraft frame test rig: Geometry](garteur_geometry_tut.md)
 - [Aircraft frame test rig: Visualization](garteur_geometry_vis_tut.md)

@@ -1,5 +1,7 @@
 # # GARTEUR SM-AG19 Testbed: Harmonic Vibration Analysis 
 
+# Source code: [`garteur_hva_tut.jl`](garteur_hva_tut.jl)
+
 # ## Description
 
 # This virtual test application is based on the test article  

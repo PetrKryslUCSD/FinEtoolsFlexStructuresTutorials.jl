@@ -1,5 +1,7 @@
 # Modal analysis of Argyris frame: effect of prestress
 
+Source code: [`argyris_frame_modal_tut.jl`](argyris_frame_modal_tut.jl)
+
 ## Description
 
 Vibration analysis of a L-shaped frame under a loading.

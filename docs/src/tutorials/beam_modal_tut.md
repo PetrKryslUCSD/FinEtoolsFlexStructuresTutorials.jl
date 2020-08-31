@@ -1,5 +1,7 @@
 # Modal analysis of simply supported/clamped beam
 
+Source code: [`beam_modal_tut.jl`](beam_modal_tut.jl)
+
 ## Description
 
 Vibration analysis of a beam simply supported in one plane, and clamped
