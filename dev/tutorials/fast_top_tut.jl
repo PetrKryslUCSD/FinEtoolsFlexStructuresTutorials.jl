@@ -11,7 +11,8 @@
 
 # ## Goals
 
-# - 
+# - Illustrate integration of the nonlinear equations 
+#   of motion with the Newmark algorithm.
 
 using LinearAlgebra
 using PlotlyJS
@@ -88,7 +89,7 @@ cs = CrossSectionRectangle(s -> Width, s -> Width, s -> [1.0, 0.0, 0.0])
 # Select the number of elements per leg.
 spin_vector = R0*[0, 0, Omega0];
 X=[0 0 0;    reshape(R0*[0,0,Length], 1, 3)];
-n=8;
+n=2;
 tolerance=Length/n/100;
 
 using FinEtoolsFlexBeams.MeshFrameMemberModule: frame_member
@@ -239,23 +240,23 @@ tipx = Float64[]
 tipy = Float64[]
 push!(tipx, X[2,1])
 push!(tipy, X[2,2])
-tbox = scatter(;x=[0.0, 0.06], y=[-0.06, 0.02], mode="markers", name = "", line_color = "rgb(255, 255, 255)")
+tbox = scatter(;x=[0.0, 0.06], y=[-0.06, 0.02], mode="markers", name = "", line_color = "rgb(255, 255, 255)", showlegend = false)
 refv = readdlm(joinpath(@__DIR__, "fast_top_ref.txt"), ',')
-tref = scatter(;x=refv[:, 1], y=refv[:, 2], mode="lines", name = "Reference", line_color = "rgb(15, 15, 15)")
-plots = cat(tbox, tref, scatter(;x=tipx./Length, y=tipy./Length, mode="markers+lines"); dims = 1)
+tref = scatter(;x=refv[:, 1], y=refv[:, 2], mode="lines", name = "Reference", line_color = "rgb(15, 15, 15)", showlegend = false)
+plots = cat(tbox, tref, scatter(;x=tipx./Length, y=tipy./Length, mode="markers+lines", showlegend = false); dims = 1)
 layout = Layout(;width=500, height=500, xaxis=attr(title="x-coordinate", zeroline=false), yaxis=attr(title="y-coordinate", zeroline=false))
 pl = plot(plots, layout)
 display(pl)
 sleep(1.0)
 
 function updategraph(step, u1, Rfield1)
-    if (mod(step,20)==0)
-        push!(tipx, X[2,1]+u1.values[tipn[1], 1])
-        push!(tipy, X[2,2]+u1.values[tipn[1], 2])
-        plots = cat(tbox, tref, scatter(;x=tipx./Length, y=tipy./Length, mode="markers", name = "Sol", line_color = "rgb(155, 15, 15)"); dims = 1)
-        react!(pl, plots, pl.plot.layout)
-        sleep(0.01)
-    end
+    # if (mod(step,20)==0)
+    #     push!(tipx, X[2,1]+u1.values[tipn[1], 1])
+    #     push!(tipy, X[2,2]+u1.values[tipn[1], 2])
+    #     plots = cat(tbox, tref, scatter(;x=tipx./Length, y=tipy./Length, mode="markers", name = "Sol", line_color = "rgb(155, 15, 15)", showlegend = false); dims = 1)
+    #     react!(pl, plots, pl.plot.layout)
+    #     sleep(0.01)
+    # end
 end
 
 integrate(tend, CB, geom0, u0, Rfield0, dchi, v0, updategraph)
@@ -274,8 +275,8 @@ eye=attr(x=0.1, y=0.12, z=2.17),
 projection = attr(type = "orthographic") 
 )))
 tbox = plot_space_box([[-1.1*Width -1.1*Width 0]; [1.1*Width 1.1*Width 1.1*Length]])
-tshape0s = plot_solid(fens, fes; x = geom0.values, u = 0.0.*dchi.values[:, 1:3], R = Rfield0.values, facecolor = "rgb(125, 155, 125)", opacity = 0.3);
-tshape0m = plot_midline(fens, fes; x = geom0.values, u = 0.0.*dchi.values[:, 1:3], color = "rgb(125, 105, 175)", lwidth = 4)
+tshape0s = plot_solid(fens, fes; x = geom0.values, u = 0.0.*dchi.values[:, 1:3], R = Rfield0.values, facecolor = "rgb(125, 155, 125)", opacity = 0.3, showlegend = false);
+tshape0m = plot_midline(fens, fes; x = geom0.values, u = 0.0.*dchi.values[:, 1:3], color = "rgb(125, 105, 175)", lwidth = 4, showlegend = false)
 plots = cat(tbox,  tshape0s, tshape0m; dims = 1)
 pl2 = render(plots; layout = layout)
 sleep(0.5)
@@ -285,9 +286,9 @@ function updateplot(step, u1, Rfield1)
     push!(tipy, X[2,2]+u1.values[tipn[1], 2])
     push!(tipz, X[2,3]+u1.values[tipn[1], 3])
     if (mod(step,13)==0)
-        curv = scatter3d(;x=tipx, y=tipy, z=tipz, mode="lines", name = "Sol", line_color = "rgb(155, 15, 15)")
-        tshape1s = plot_solid(fens, fes; x = geom0.values, u = u1.values, R = Rfield1.values, facecolor = "rgb(125, 15, 15)");
-        tshape1m = plot_midline(fens, fes; x = geom0.values, u = u1.values, color = "rgb(125, 15, 15)", lwidth = 4)
+        curv = scatter3d(;x=tipx, y=tipy, z=tipz, mode="lines", name = "Sol", line_color = "rgb(155, 15, 15)", showlegend = false)
+        tshape1s = plot_solid(fens, fes; x = geom0.values, u = u1.values, R = Rfield1.values, facecolor = "rgb(125, 15, 15)", showlegend = false);
+        tshape1m = plot_midline(fens, fes; x = geom0.values, u = u1.values, color = "rgb(125, 15, 15)", lwidth = 4, showlegend = false)
         plots = cat(tbox,  tshape0s, tshape0m,  curv, tshape1s, tshape1m; dims = 1)
         react!(pl2, plots, pl2.plot.layout)
         sleep(0.12)
