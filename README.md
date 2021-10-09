@@ -7,7 +7,7 @@
 
 [`FinEtools`](https://github.com/PetrKryslUCSD/FinEtools.jl.git) is a package
 for basic operations on finite element meshes. [`FinEtoolsFlexBeams`](https://github.com/PetrKryslUCSD/FinEtoolsFlexBeams.jl.git) is a
-package using `FinEtools` to solve linear stress analysis problems. This package provides tutorials for  [`FinEtoolsFlexBeams`](https://github.com/PetrKryslUCSD/FinEtoolsFlexBeams.jl.git).
+package using `FinEtools` to solve linear and nonlinear problems of static and dynamic response of structures composed of flexible beams problems. This package provides tutorials for  [`FinEtoolsFlexBeams`](https://github.com/PetrKryslUCSD/FinEtoolsFlexBeams.jl.git).
 
 
 ## Table of contents
