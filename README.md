@@ -2,7 +2,9 @@
 [![Build Status](https://travis-ci.com/PetrKryslUCSD/FinEtoolsFlexStructuresTutorials.jl.svg?branch=master)](https://travis-ci.com/PetrKryslUCSD/FinEtoolsFlexStructuresTutorials.jl)
 [![Latest documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://petrkryslucsd.github.io/FinEtoolsFlexStructuresTutorials.jl/dev)
 
-# FinEtoolsFlexStructuresTutorials: tutorials for flexible-beam problems
+# FinEtoolsFlexStructuresTutorials
+
+Tutorials for the package [`FinEtoolsFlexStructures`](https://github.com/PetrKryslUCSD/FinEtoolsFlexStructures.jl.git).
 
 
 [`FinEtools`](https://github.com/PetrKryslUCSD/FinEtools.jl.git) is a package
