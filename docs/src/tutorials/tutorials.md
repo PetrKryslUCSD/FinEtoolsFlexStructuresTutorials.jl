@@ -2,7 +2,8 @@
 
 # Tutorials
 
-## Dynamics
+## Beam Dynamics
+
 - [Beam vibration](beam_modal_tut.md)
 - [Aircraft frame test rig: Geometry](garteur_geometry_tut.md)
 - [Aircraft frame test rig: Visualization](garteur_geometry_vis_tut.md)
@@ -17,3 +18,6 @@
 - Beam with time-dependent axial force (Mathieu problem)
 
 
+## Shell Statics
+
+- [Twisted beam deflection](twisted_beam_tut.md)

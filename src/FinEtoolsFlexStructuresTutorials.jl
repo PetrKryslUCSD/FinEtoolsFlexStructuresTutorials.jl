@@ -1,0 +1,3 @@
+module FinEtoolsFlexStructuresTutorials
+
+end # module
