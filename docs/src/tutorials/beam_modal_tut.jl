@@ -16,8 +16,10 @@
 # - Calculate the discrete model quantities and solve the free vibration problem.
 # - Demonstrate visualization of the free vibrations.
 
-##
 # ## Definition of the basic inputs
+
+# We will probably need some linear algebra functions.
+using LinearAlgebra
 
 # The finite element code relies on the basic functionality implemented in this
 # package.
@@ -33,7 +35,6 @@ rho = 0.28 * phun("lbm/in^3")
 # Here are the cross-sectional dimensions and the length of the beam between supports.
 b = 1.8 * phun("in"); h = 1.8 * phun("in"); L = 100 * phun("in");
 
-##
 # ## Analytical frequencies 
 
 # The analytical frequencies were taken from table 8-1 of Formulas for natural
@@ -57,7 +58,7 @@ I3 = b^3 * h / 12;
 # analytical natural frequencies.
 neigvs = length(analyt_freq);
  
-##
+
 # ## Cross-section
 
 # Cross-sectional properties are incorporated in the cross-section object. The
@@ -76,6 +77,8 @@ cs = CrossSectionRectangle(s -> b, s -> h, s -> [1.0, 0.0, 0.0])
 @show A, I2, I3
 @show cs.parameters(0.0)
 
+# ## Mesh generation
+
 # Now we generate the mesh of the beam. The locations of its two endpoints are:
 xyz = [[0 -L / 2 0]; [0 L / 2 0]]
 # We will generate
@@ -89,7 +92,6 @@ fens, fes = frame_member(xyz, n, cs);
 @show fes
 # Note  that the cross-sectional properties are incorporated through `cs`.
 
-##
 # ## Material
 
 # Material properties can be now used to create a material: isotropic elasticity
@@ -97,19 +99,21 @@ fens, fes = frame_member(xyz, n, cs);
 using FinEtoolsDeforLinear
 material = MatDeforElastIso(DeforModelRed3D, rho, E, nu, 0.0)
 
-##
+
 # ## Fields
 
 # Now we start constructing the discrete finite element model.
 # We begin by constructing the requisite fields, geometry and displacement.
-# These are the so-called "configuration variables", all initialized to 0.
-# This is that geometry field.
+# These are the so-called "configuration variables", all initialized to zero.
+
+# This is the geometry field. It describes the locations of the nodes.
 geom0 = NodalField(fens.xyz)
 # This is the displacement field, three unknown displacements per node.
 u0 = NodalField(zeros(size(fens.xyz, 1), 3))
-# This is the rotation field, three unknown rotations per node are represented
-# with a rotation matrix, in total nine numbers. The utility function
-# `initial_Rfield`
+# This is the rotation (orientation) field, where the three unknown rotations
+# per node are represented with a rotation matrix, in total nine numbers. The
+# utility function `initial_Rfield` is used to construct this initial
+# orientation field where each orientation matrix is the identity.
 using FinEtoolsFlexStructures.RotUtilModule: initial_Rfield
 Rfield0 = initial_Rfield(fens)
 # Here we verify the number of nodes and the number of degrees of freedom in the
@@ -122,7 +126,7 @@ Rfield0 = initial_Rfield(fens)
 # node.
 dchi = NodalField(zeros(size(fens.xyz, 1), 6))
 
-##
+
 # ## Support conditions
 
 # Now we apply the essential boundary conditions (EBCs) to enforce the action of
@@ -137,7 +141,7 @@ l1 = selectnode(fens; box=[0 0 -L / 2 -L / 2 0 0], tolerance=L / n / 1000)
 # The nodes in this list should consist of a single node (which is why the
 # tolerance is so small, in order to limit the selection to a single node near
 # the location given).
-@show length(l1)
+@show length(l1) == 1
 # The boundary condition at this point dictates zero displacements (degrees of
 # freedom 1, 2, and 3) and zero rotations about $Y$ (5) and $Z$ (6). This
 # leaves rotation about the $X$ free.
@@ -165,7 +169,7 @@ numberdofs!(dchi);
 # degrees of freedom per node in the incremental displacement field.
 
 
-##
+
 # ## Assemble the global discrete system
 
 using FinEtoolsFlexStructures.FEMMCorotBeamModule: FEMMCorotBeam
@@ -173,8 +177,10 @@ femm = FEMMCorotBeam(IntegDomain(fes, GaussRule(1, 2)), material);
 
 # For disambiguation we will refer to the stiffness and mass functions by
 # qualifying them with the corotational-beam module, `FEMMCorotBeamModule`.
+# We will use the abbreviation `CB`. 
 using FinEtoolsFlexStructures.FEMMCorotBeamModule
 CB = FEMMCorotBeamModule
+
 # Thus we can construct the stiffness and mass matrix as follows:
 # Note that the finite element machine is the first argument. This provides
 # access to the integration domain. The next argument is the geometry field,
@@ -186,28 +192,31 @@ M = CB.mass(femm, geom0, u0, Rfield0, dchi);
 # freedom that are unknown (20).
 @show size(K)
 
-##
+
 # ## Solve the free-vibration problem
 
 # The Arnoldi algorithm implemented in the well-known `Arpack` package is used
 # to solve the generalized eigenvalue problem with the sparse matrices. As is
 # common in structural dynamics, we request the smallest eigenvalues in
-# absolute value (`:SM`). 
+# absolute value (`:SM`). In order to help the function decide which algorithm
+# is suitable, we explicitly designate the matrices as symmetric.
 using Arpack
 evals, evecs, nconv = eigs(Symmetric(K), Symmetric(M); nev=neigvs, which=:SM, explicittransform = :none);
-# First  we should check that the requested eigenvalues actually converged:
+
+# We should check that the requested eigenvalues actually converged:
 @show nconv == neigvs
 
 # The eigenvalues (i. e. the squares of the angular frequencies) are returned in
 # the vector `evals`. The mode shapes constitute the columns of the matrix
 # `evecs`.
 @show size(evecs)
+
 # The natural frequencies are obtained from the squares of the angular
-# frequencies. We note the use of `sqrt.` which broadcast the square root over
+# frequencies. We note the use of `sqrt.` which broadcasts the square root over
 # the array `evals`.
 fs = sqrt.(evals) / (2 * pi);
 
-##
+
 # ## Comparison of computed and analytical results
 
 # The approximate and analytical frequencies are now reported.
@@ -220,18 +229,20 @@ println("Analytical frequencies: $analyt_freq [Hz]")
 errs = abs.(analyt_freq .- fs) ./ analyt_freq
 println("Relative errors of frequencies: $errs [ND]")
 
-##
+
 # ## Visualize vibration modes
 
 # The animation will show one of the vibration modes overlaid on the undeformed
-# geometry. The configuration during the animation needs to reflect rotations.
-# The function `update_rotation_field!` will update the rotation field given a
-# vibration mode.
-using FinEtoolsFlexStructures.RotUtilModule: update_rotation_field!
+# geometry.
 
 # The visualization utilities take advantage of the PlotlyJS library.
 
 using VisualStructures: plot_space_box, plot_solid, render, react!, default_layout_3d, save_to_json
+
+# The configuration during the animation needs to reflect rotations.
+# The function `update_rotation_field!` will update the rotation field given a
+# vibration mode.
+using FinEtoolsFlexStructures.RotUtilModule: update_rotation_field!
 
 # The magnitude of the vibration modes (displacements  and rotations) will be
 # amplified with this scale factor:
@@ -252,7 +263,7 @@ let
     # Initially the plot consists of the box and the undeformed geometry.
     plots = cat(tbox, tenv0; dims=1)
     # Create the layout for the plot. Set the size of the window.
-    layout = default_layout_3d(;width=600, height=600, options = Dict(:responsive=>true))
+    layout = default_layout_3d(; options = Dict(:responsive=>true))
     # Set the aspect mode to get the correct proportions.
     layout[:scene][:aspectmode] = "data"
     # Render the undeformed structure
@@ -285,3 +296,8 @@ end
 # Load the plot from a file.
 using VisualStructures: plot_from_json
 plot_from_json("deformed_plot.json")
+
+# Generate the markdown from the source:
+using Literate
+Literate.markdown(@__FILE__, "."; documenter=false);
+nothing
