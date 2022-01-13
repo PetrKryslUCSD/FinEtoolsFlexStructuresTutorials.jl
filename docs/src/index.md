@@ -1,4 +1,4 @@
-# FinEtoolsFlexBeamsTutorials Documentation
+# FinEtoolsFlexStructuressTutorials Documentation
 
 ## Tutorials
 
