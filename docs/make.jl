@@ -1,11 +1,11 @@
-using Documenter, FinEtools, FinEtoolsDeforLinear, FinEtoolsFlexBeams, FinEtoolsFlexBeamsTutorials
+using Documenter, FinEtools, FinEtoolsDeforLinear, FinEtoolsFlexStructures, FinEtoolsFlexStructuresTutorials
 
 makedocs(
-	modules = [FinEtoolsFlexBeamsTutorials],
+	modules = [FinEtoolsFlexStructuresTutorials],
 	doctest = false, clean = true,
 	format = Documenter.HTML(prettyurls = false),
 	authors = "Petr Krysl",
-	sitename = "FinEtoolsFlexBeamsTutorials.jl",
+	sitename = "FinEtoolsFlexStructuresTutorials.jl",
 	pages = Any[
 			"Home" => "index.md",
 			"Tutorials" => "tutorials/tutorials.md",
@@ -13,5 +13,5 @@ makedocs(
 	)
 
 deploydocs(
-    repo = "github.com/PetrKryslUCSD/FinEtoolsFlexBeamsTutorials.jl.git",
+    repo = "github.com/PetrKryslUCSD/FinEtoolsFlexStructuresTutorials.jl.git",
 )
