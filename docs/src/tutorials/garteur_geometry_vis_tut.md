@@ -32,9 +32,9 @@ The test-bed was designed and manufactured by ONERA, France.
 - Demonstrate the use of massless connectors.
 - Visualize the structure interactively.
 
-```julia
+````julia
 #
-```
+````
 
 ## Geometry of the testbed airplane.
 
@@ -49,25 +49,25 @@ similarly to airplane ones, with some very close modal frequencies.
 The script included below defines the geometry of the structure, the
 cross-sectional properties, the connectivity, and the location of the nodes.
 
-```julia
+````julia
 include("garteur_geometry_tut.jl")
 
 #
-```
+````
 
 ## Basic visualization
 
 Here we use the `PlotlyJS` plotting library, with some simple utilities for
 generating geometry of beams.
 
-```julia
+````julia
 using PlotlyJS
-using FinEtoolsFlexBeams.VisUtilModule: plot_solid, plot_space_box, render, default_layout_3d, save_to_json
-```
+using VisualStructures: plot_solid, plot_space_box, render, default_layout_3d, save_to_json
+````
 
 The colors are used to help distinguish between the individual parts of the model.
 
-```julia
+````julia
 colors = [
 "rgb(125, 155, 155)",  # 1 body
 "rgb(125, 155, 155)",  # 2 wing
@@ -81,7 +81,7 @@ colors = [
 "rgb(125, 175, 15)",  # 10 massless connectors: fuselage to tail
 "rgb(15, 155, 155)",  # 11 massless connectors: sensors, point masses
 ]
-```
+````
 
 The geometry is defined in terms of "traces" (a trace is in the `PlotlyJS`
 parlance a graphical object; it could be a curve, surface, and a lot of other
@@ -89,14 +89,14 @@ things). It is the name for a graphical object in `PlotlyJS`. The two points
 below define a box, which is helpful when setting the extents of the graphics
 display.
 
-```julia
+````julia
 tbox = plot_space_box([[-1.2 * L -1.2 * L -1.2 * L]; [+1.2 * L +1.2 * L +1.2 * L]])
-```
+````
 
 For each finite element set in the array `fesa`, generate the graphics to
 represent that object.
 
-```julia
+````julia
 traces = let traces = tbox
     for fes in fesa
         labl  = fes.label[1]
@@ -105,22 +105,22 @@ traces = let traces = tbox
     end
     traces
 end
-```
+````
 
 The layout of the plot is defined with simple defaults.
 
-```julia
+````julia
 layout = default_layout_3d(;width=900, height=900)
-```
+````
 
 Next, the graphics is rendered, and may be interacted with by zooming,
 panning, etc.
 
-```julia
+````julia
 pl = render(traces; layout = layout)
 
 #
-```
+````
 
 ## Visualizing the nodes
 
@@ -128,7 +128,7 @@ In order to be able to discern the nodes we will reduce the opacity of the
 surfaces representing the beams, otherwise the nodes would be hidden by these
 surfaces. Otherwise the geometries defined in the same way as above.
 
-```julia
+````julia
 tbox = plot_space_box([[-1.2 * L -1.2 * L -1.2 * L]; [+1.2 * L +1.2 * L +1.2 * L]])
 traces = let traces = tbox
     for fes in fesa
@@ -138,24 +138,24 @@ traces = let traces = tbox
     end
     traces
 end
-```
+````
 
 Next we add to the "traces" the graphics representing all the nodes in the
 model as bright red dots.
 
-```julia
-using FinEtoolsFlexBeams.VisUtilModule: plot_nodes
+````julia
+using VisualStructures: plot_nodes
 traces = cat(traces, plot_nodes(fens; color = "rgb(255, 15, 5)"); dims = 1)
-```
+````
 
 Finally, the graphics is presented.
 
-```julia
+````julia
 layout = default_layout_3d(;width=900, height=900)
 pl = render(traces; layout = layout)
 
-true
-```
+nothing
+````
 
 ---
 

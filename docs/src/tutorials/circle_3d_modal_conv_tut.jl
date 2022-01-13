@@ -117,7 +117,7 @@ results = let
         M = mass(femm, geom, u)
 
         # Solve the free vibration problem. 
-        evals, evecs, nconv = eigs(K+oshift*M, M; nev=neigvs, which=:SM)
+        evals, evecs, nconv = eigs(K+oshift*M, M; nev=neigvs, which=:SM, explicittransform = :none)
         # Correct for the mass shift.
         evals = evals .- oshift;
         sigdig(n) = round(n * 10000) / 10000

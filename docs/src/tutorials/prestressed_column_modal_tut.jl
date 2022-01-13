@@ -44,7 +44,7 @@ b = 1.8 * phun("in"); h = 1.8 * phun("in"); L = 300 * phun("in");
 # coordinates. `[1.0, 0.0, 0.0]` is the vector that together with the tangent
 # to the midline curve of the beam spans the $x_1x_2$ plane of the local
 # coordinates for the beam.
-using FinEtoolsFlexBeams.CrossSectionModule: CrossSectionRectangle
+using FinEtoolsFlexStructures.CrossSectionModule: CrossSectionRectangle
 cs = CrossSectionRectangle(s -> b, s -> h, s -> [1.0, 0.0, 0.0])
 
 # Here we retrieve the cross-sectional properties at the arc length 0.0.
@@ -77,7 +77,7 @@ xyz = [[0 -L/2 0]; [0 L/2 0]]
 # We will generate
 n = 20
 # beam elements along the member.
-using FinEtoolsFlexBeams.MeshFrameMemberModule: frame_member
+using FinEtoolsFlexStructures.MeshFrameMemberModule: frame_member
 fens, fes = frame_member(xyz, n, cs);
 
 
@@ -101,7 +101,7 @@ u0 = NodalField(zeros(size(fens.xyz, 1), 3))
 # This is the rotation field, three unknown rotations per node are represented
 # with a rotation matrix, in total nine numbers. The utility function
 # `initial_Rfield`
-using FinEtoolsFlexBeams.RotUtilModule: initial_Rfield
+using FinEtoolsFlexStructures.RotUtilModule: initial_Rfield
 Rfield0 = initial_Rfield(fens)
 
 # Finally, this is the displacement and rotation field for incremental changes,
@@ -150,12 +150,12 @@ numberdofs!(dchi);
 ##
 # ## Assemble the global discrete system
 
-using FinEtoolsFlexBeams.FEMMCorotBeamModule: FEMMCorotBeam
+using FinEtoolsFlexStructures.FEMMCorotBeamModule: FEMMCorotBeam
 femm = FEMMCorotBeam(IntegDomain(fes, GaussRule(1, 2)), material);
 
 # For disambiguation we will refer to the stiffness and mass functions by
 # qualifying them with the corotational-beam module, `FEMMCorotBeamModule`.
-using FinEtoolsFlexBeams.FEMMCorotBeamModule
+using FinEtoolsFlexStructures.FEMMCorotBeamModule
 CB = FEMMCorotBeamModule
 
 # Thus we can construct the stiffness matrix as follows:
@@ -193,7 +193,7 @@ u1 = deepcopy(u0)
 u1.values .= dchi.values[:, 1:3]
 # Then the rotations:
 Rfield1 = deepcopy(Rfield0)
-using FinEtoolsFlexBeams.RotUtilModule:  update_rotation_field!
+using FinEtoolsFlexStructures.RotUtilModule:  update_rotation_field!
 update_rotation_field!(Rfield1, dchi)
 
 
@@ -219,11 +219,11 @@ using Arpack
 
 # The prestress-modified natural frequencies are computed in the loop for 
 # a number of prestress force values.
-Ps = collect(linearspace(-1.0, 1.0, 20)).*PEul
+Ps = collect(linearspace(-1.0, 1.0, 50)).*PEul
 freqs = let freqs =[];
     for P in Ps
         # Note that we take the complete stiffness matrix: elastic plus prestress (initial stress).
-        evals, evecs, nconv = eigs(K + P.*Kg, M; nev=neigvs, which=:SM);
+        evals, evecs, nconv = eigs(K + P.*Kg, M; nev=neigvs, which=:SM, explicittransform = :none);
         # The fundamental frequency:
         f = sqrt(evals[1]) / (2 * pi);
         push!(freqs, f);
@@ -249,4 +249,4 @@ using Gnuplot
 @gp  :- "set ylabel 'Frequency(P)/Frequency(0) [Hz]'" :-
 @gp  :- "set title 'Prestressed column'"
 
-true
+nothing

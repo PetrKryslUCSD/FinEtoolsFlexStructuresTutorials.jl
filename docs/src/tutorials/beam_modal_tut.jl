@@ -194,9 +194,7 @@ M = CB.mass(femm, geom0, u0, Rfield0, dchi);
 # common in structural dynamics, we request the smallest eigenvalues in
 # absolute value (`:SM`). 
 using Arpack
-evals, evecs, nconv = eigs(Symmetric(K), Symmetric(M); nev=neigvs, which=:SM);
-evals = real.(evals)
-evecs = real.(evecs)
+evals, evecs, nconv = eigs(Symmetric(K), Symmetric(M); nev=neigvs, which=:SM, explicittransform = :none);
 # First  we should check that the requested eigenvalues actually converged:
 @show nconv == neigvs
 

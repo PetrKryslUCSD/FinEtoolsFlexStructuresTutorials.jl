@@ -1,4 +1,4 @@
-# # Static analysis of clamped twisted beam
+# Static analysis of clamped twisted beam
 
 # Source code: [`twisted_beam_tut.jl`](twisted_beam_tut.jl)
 
@@ -42,11 +42,13 @@
 # The finite element code relies on the basic functionality implemented in this
 # package.
 
+using LinearAlgebra
 using FinEtools
 using FinEtoolsDeforLinear
 using FinEtoolsFlexStructures.FESetShellT3Module: FESetShellT3
 using FinEtoolsFlexStructures.FEMMShellT3FFModule
 using FinEtoolsFlexStructures.RotUtilModule: initial_Rfield, update_rotation_field!
+using FinEtools.MeshExportModule.VTKWrite: vtkwrite
 
 # The inputs are defined in consistent units.
 # The elastic properties are:
@@ -82,15 +84,17 @@ params = params_thicker_dir_3
 
 # ## Mesh generation
 
-# The mesh is initially generated for a rectangular 2d domain,  which is then
-# expanded into a three dimensional domain, and the locations of the nodes
-# are tweaked to produce the pre twisted shape. The element size can be
-# controlled with these two variables:
+# The mesh is initially generated for a rectangular 2d domain. The element size
+# can be controlled with these two variables:
 
 nL = 48;
 nW = 8;
+nL, nW = 8, 4
 
 fens, fes = T3block(L, W, nL, nW, :a);
+
+# The 2d mesh is expanded into a three dimensional domain, and the
+# locations of the nodes are tweaked to produce the pre twisted shape.
 fens.xyz = xyz3(fens)
 for i in 1:count(fens)
     a = fens.xyz[i, 1] / L * (pi / 2)
@@ -105,9 +109,14 @@ end
 # relative to the module name. 
 t3ffm = FEMMShellT3FFModule
 
-
+# The shell elements have a type `FESetShellT3`. The type of the mesh is the
+# plain isoparametric triangle, which is instructed to delegate to the shell
+# element. 
 sfes = FESetShellT3()
 accepttodelegate(fes, sfes)
+
+# Use the convenience function to make an instance of the finite element model
+# machine for the T3FF shell. 
 femm = t3ffm.make(IntegDomain(fes, TriRule(1), params.t), mater)
 
 # Construct the requisite fields, geometry and displacement. 
@@ -140,16 +149,65 @@ t3ffm.associategeometry!(femm, geom0)
 # Assemble the system stiffness matrix. 
 K = t3ffm.stiffness(femm, geom0, u0, Rfield0, dchi);
 
-# Load
+# Though load is a concentrated force applied at the center of the beam. First
+# we select the node.
 nl = selectnode(fens; box = Float64[L L 0 0 0 0], tolerance = tolerance)
+# Next we create a mesh of the loaded boundary (i.e. the selected node), so that
+# we can integrate along it.
 loadbdry = FESetP1(reshape(nl, 1, 1))
+# Now we create a finite element model machine that knows how to integrate.
+# Since our boundary consists of a single point, we use a point rule.
 lfemm = FEMMBase(IntegDomain(loadbdry, PointRule()))
+# Now we create a force intensity to represent the loading.
 v = FFlt[0, 0, 0, 0, 0, 0]
 v[params.dir] = params.force
 fi = ForceIntensity(v);
+# Finally we computed the load vector corresponding to the force intensity.
 F = distribloads(lfemm, geom0, dchi, fi, 3);
 
-# Solve
+# The system of linear algebraic equations of balance is solved for the displacements and rotations.
 U = K \ F
+# The vector of unknowns is now distributed into a field.
 scattersysvec!(dchi, U[:])
-@show dchi.values[nl, params.dir][1] / params.uex * 100
+
+# The deflection in the correct direction at the loaded node is now extracted.
+tipdefl = dchi.values[nl, params.dir][1]
+@show tipdefl / params.uex * 100
+
+# Generate a graphical display of resultants. The resultants only make sense in
+# a coordinate system aligned with the shell surface. Here we construct such a
+# coordinate system by using the tangent directions to the surface to construct
+# the normal, and the vector along the global X axis will serve as the first
+# basis vector of the local cartesian coordinate system.
+function updatecsys!(csmatout::FFltMat, XYZ::FFltMat, tangents::FFltMat, fe_label::FInt)
+    # first the normal
+    cross3!(view(csmatout, :, 3), view(tangents, :, 1), view(tangents, :, 2))
+    csmatout[:, 3] ./= norm(view(csmatout, :, 3))
+    csmatout[:, 1] .= (1.0, 0.0, 0.0)
+    cross3!(view(csmatout, :, 2), view(csmatout, :, 3), view(csmatout, :, 1))
+    return csmatout
+end
+ocsys = CSys(3, 3, updatecsys!)
+scalars = []
+for nc in 1:3
+    fld = fieldfromintegpoints(femm, geom0, dchi, :moment, nc, outputcsys = ocsys)
+    # fld = elemfieldfromintegpoints(femm, geom0, dchi, :moment, nc)
+    push!(scalars, ("m$nc", fld.values))
+end
+vtkwrite("twisted_beam-m.vtu", fens, fes; scalars = scalars, vectors = [("u", dchi.values[:, 1:3])])
+scalars = []
+for nc in 1:3
+    fld = fieldfromintegpoints(femm, geom0, dchi, :membrane, nc, outputcsys = ocsys)
+    # fld = elemfieldfromintegpoints(femm, geom0, dchi, :moment, nc)
+    push!(scalars, ("n$nc", fld.values))
+end
+vtkwrite("twisted_beam-n.vtu", fens, fes; scalars = scalars, vectors = [("u", dchi.values[:, 1:3])])
+scalars = []
+for nc in 1:2
+    fld = fieldfromintegpoints(femm, geom0, dchi, :shear, nc, outputcsys = ocsys)
+    # fld = elemfieldfromintegpoints(femm, geom0, dchi, :moment, nc)
+    push!(scalars, ("q$nc", fld.values))
+end
+vtkwrite("twisted_beam-q.vtu", fens, fes; scalars = scalars, vectors = [("u", dchi.values[:, 1:3])])
+
+true

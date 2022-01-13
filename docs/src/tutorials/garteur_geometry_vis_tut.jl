@@ -55,7 +55,7 @@ include("garteur_geometry_tut.jl")
 # Here we use the `PlotlyJS` plotting library, with some simple utilities for
 # generating geometry of beams.
 using PlotlyJS
-using FinEtoolsFlexBeams.VisUtilModule: plot_solid, plot_space_box, render, default_layout_3d, save_to_json
+using VisualStructures: plot_solid, plot_space_box, render, default_layout_3d, save_to_json
 
 # The colors are used to help distinguish between the individual parts of the model.
 colors = [
@@ -112,11 +112,11 @@ traces = let traces = tbox
 end
 # Next we add to the "traces" the graphics representing all the nodes in the
 # model as bright red dots.
-using FinEtoolsFlexBeams.VisUtilModule: plot_nodes
+using VisualStructures: plot_nodes
 traces = cat(traces, plot_nodes(fens; color = "rgb(255, 15, 5)"); dims = 1)
 
 # Finally, the graphics is presented.
 layout = default_layout_3d(;width=900, height=900)
 pl = render(traces; layout = layout)
 
-true
+nothing

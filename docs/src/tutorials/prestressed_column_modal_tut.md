@@ -15,41 +15,41 @@ The fundamental vibration frequency depends on the prestress force.
 - Solve the eigenvalue free vibration problem with the inclusion of the
   geometric stiffness matrix.
 
-```julia
+````julia
 #
-```
+````
 
 ## Definition of the basic inputs
 
 The finite element code realize on the basic functionality implemented in this
 package.
 
-```julia
+````julia
 using FinEtools
-```
+````
 
 The material parameters may be defined with the specification of the units.
 The elastic properties are:
 
-```julia
+````julia
 E = 30002.0 * phun("ksi")
 nu = 0.0;
-```
+````
 
 The mass density is expressed in customary units as
 
-```julia
+````julia
 g = 32.17*12 * phun("in/sec^2")
 rho = 4.65 * phun("oz/in ^3") / g
-```
+````
 
 Here are the cross-sectional dimensions and the length of the beam between supports.
 
-```julia
+````julia
 b = 1.8 * phun("in"); h = 1.8 * phun("in"); L = 300 * phun("in");
 
 #
-```
+````
 
 ## Cross-section
 
@@ -62,18 +62,18 @@ coordinates. `[1.0, 0.0, 0.0]` is the vector that together with the tangent
 to the midline curve of the beam spans the $x_1x_2$ plane of the local
 coordinates for the beam.
 
-```julia
-using FinEtoolsFlexBeams.CrossSectionModule: CrossSectionRectangle
+````julia
+using FinEtoolsFlexStructures.CrossSectionModule: CrossSectionRectangle
 cs = CrossSectionRectangle(s -> b, s -> h, s -> [1.0, 0.0, 0.0])
-```
+````
 
 Here we retrieve the cross-sectional properties at the arc length 0.0.
 
-```julia
+````julia
 @show A, J, I1, I2, I3 = cs.parameters(0.0)
 
 #
-```
+````
 
 ## Analytical frequencies
 
@@ -85,57 +85,57 @@ The beam has cylindrical supports at either end.
 
 Simply supported column without a pre-stressing force has a fundamental frequency of
 
-```julia
+````julia
 @show analyt_freq = (1*pi)^2/(2*pi*L^2)*sqrt(E*I2/rho/A);
-```
+````
 
 The critical Euler buckling load (simple-support): (pi^2*E*I2/L^2).
 
-```julia
+````julia
 @show PEul = (pi^2*E*I2/L^2);
-```
+````
 
 Ps=linspace(-1, 1, 100);
 
 The purpose of the numerical model is to calculate approximation to the fundamental
 analytical natural frequency.
 
-```julia
+````julia
 neigvs = 1;
-```
+````
 
 Now we generate the mesh of the beam. The locations of its two endpoints are:
 
-```julia
+````julia
 xyz = [[0 -L/2 0]; [0 L/2 0]]
-```
+````
 
 We will generate
 
-```julia
+````julia
 n = 20
-```
+````
 
 beam elements along the member.
 
-```julia
-using FinEtoolsFlexBeams.MeshFrameMemberModule: frame_member
+````julia
+using FinEtoolsFlexStructures.MeshFrameMemberModule: frame_member
 fens, fes = frame_member(xyz, n, cs);
 
 
 #
-```
+````
 
 ## Material
 
 Material properties can be now used to create a material: isotropic elasticity model of the `FinEtoolsDeforLinear` package is instantiated.
 
-```julia
+````julia
 using FinEtoolsDeforLinear
 material = MatDeforElastIso(DeforModelRed3D, rho, E, nu, 0.0)
 
 #
-```
+````
 
 ## Fields
 
@@ -144,34 +144,34 @@ We begin by constructing the requisite fields, geometry and displacement.
 These are the so-called "configuration variables", all initialized to 0.
 This is that geometry field.
 
-```julia
+````julia
 geom0 = NodalField(fens.xyz)
-```
+````
 
 This is the displacement field, three unknown displacements per node.
 
-```julia
+````julia
 u0 = NodalField(zeros(size(fens.xyz, 1), 3))
-```
+````
 
 This is the rotation field, three unknown rotations per node are represented
 with a rotation matrix, in total nine numbers. The utility function
 `initial_Rfield`
 
-```julia
-using FinEtoolsFlexBeams.RotUtilModule: initial_Rfield
+````julia
+using FinEtoolsFlexStructures.RotUtilModule: initial_Rfield
 Rfield0 = initial_Rfield(fens)
-```
+````
 
 Finally, this is the displacement and rotation field for incremental changes,
 incremental displacements and incremental rotations. In total, 6 unknowns per
 node.
 
-```julia
+````julia
 dchi = NodalField(zeros(size(fens.xyz, 1), 6))
 
 #
-```
+````
 
 ## Support conditions
 
@@ -180,77 +180,77 @@ the supports at the ends of the beam.
 
 First we select the node at the location  `[0 -L/2 0]`. This is the immovable node.
 
-```julia
+````julia
 immovable = selectnode(fens; box=[0 0 -L/2 -L/2 0 0], tolerance=L/n/1000)[1]
-```
+````
 
 The boundary condition at this point dictates zero displacements (degrees of
 freedom 1, 2, and 3) and zero rotations about the axis of the beam (degree of freedom 5).
 
-```julia
+````julia
 for i in [1,2,3,5]
     setebc!(dchi, [immovable], true, i)
 end
-```
+````
 
 Similarly, the node next to the other end of the beam is selected. This node
 is to be exposed to the external loading through the axial force.
 
-```julia
+````julia
 movable = selectnode(fens; box=[0 0 L/2  L/2 0 0], tolerance=L/n/1000)[1]
-```
+````
 
 This time the transverse displacements and the axial rotation are suppressed.
 
-```julia
+````julia
 for i in [1,3,5]
     setebc!(dchi, [movable], true, i)
 end
-```
+````
 
 These boundary conditions now need to be "applied". This simply means that the
 prescribed values of the degrees of freedom are copied into the active degrees
 of freedom.
 
-```julia
+````julia
 applyebc!(dchi)
-```
+````
 
 The essential boundary conditions will also reduce the number of free
 (unknown) degrees of freedom.
 
-```julia
+````julia
 numberdofs!(dchi);
-```
+````
 
 Here we inspect the degrees of freedom in the incremental
 displacement/rotation field:
 
-```julia
+````julia
 @show dchi.dofnums
-```
+````
 
 Note that the degrees of freedom are actually carried by the incremental
 field, not by the displacement or the rotation fields.
 
-```julia
+````julia
 #
-```
+````
 
 ## Assemble the global discrete system
 
-```julia
-using FinEtoolsFlexBeams.FEMMCorotBeamModule: FEMMCorotBeam
+````julia
+using FinEtoolsFlexStructures.FEMMCorotBeamModule: FEMMCorotBeam
 femm = FEMMCorotBeam(IntegDomain(fes, GaussRule(1, 2)), material);
-```
+````
 
 For disambiguation we will refer to the stiffness and mass functions by
 qualifying them with the corotational-beam module, `FEMMCorotBeamModule`.
 
-```julia
-using FinEtoolsFlexBeams.FEMMCorotBeamModule
+````julia
+using FinEtoolsFlexStructures.FEMMCorotBeamModule
 CB = FEMMCorotBeamModule
-```
+````
 
 Thus we can construct the stiffness matrix as follows:
 Note that the finite element machine is the first argument. This provides
@@ -258,24 +258,24 @@ access to the integration domain. The next argument is the geometry field,
 followed by the displacement, rotations, and incremental
 displacement/rotation fields.
 
-```julia
+````julia
 K = CB.stiffness(femm, geom0, u0, Rfield0, dchi);
-```
+````
 
 Now we construct the means of applying the concentrated force of prestress at
 the movable node. The node is the "boundary" of the domain of the column.
 
-```julia
+````julia
 loadbdry = FESetP1(reshape([movable], 1, 1))
-```
+````
 
 The concentrated force can be considered a distributed loading at a single
 point. This distributed loading can be integrated with a quadrature rule
 suitable for a single point domains.
 
-```julia
+````julia
 lfemm = FEMMBase(IntegDomain(loadbdry, PointRule()))
-```
+````
 
 We assume that the magnitude of the force is unity. Note that the force is
 applied in the positive direction along the beam, meaning as tensile.
@@ -283,57 +283,57 @@ Therefore, buckling will be caused by applying  a negative buckling factor.
 Numerically, the buckling factor corresponding to failure is then of the
 magnitude of the Euler force.
 
-```julia
+````julia
 fi = ForceIntensity(FFlt[0, 1.0, 0, 0, 0, 0]);
-```
+````
 
 The distributed loading is now integrated over the "volume" of the integration
 domain.
 
-```julia
+````julia
 F = CB.distribloads(lfemm, geom0, dchi, fi, 3);
-```
+````
 
 Solve for the displacement under @show the static load
 
-```julia
+````julia
 scattersysvec!(dchi, K\F);
-```
+````
 
 Update deflections so that the initial stress can be computed. First the
 displacements:
 
-```julia
+````julia
 u1 = deepcopy(u0)
 u1.values .= dchi.values[:, 1:3]
-```
+````
 
 Then the rotations:
 
-```julia
+````julia
 Rfield1 = deepcopy(Rfield0)
-using FinEtoolsFlexBeams.RotUtilModule:  update_rotation_field!
+using FinEtoolsFlexStructures.RotUtilModule:  update_rotation_field!
 update_rotation_field!(Rfield1, dchi)
-```
+````
 
 The static deflection is now used to compute the internal forces
 which in turn lead to the geometric stiffness matrix.
 
-```julia
+````julia
 Kg = CB.geostiffness(femm, geom0, u1, Rfield1, dchi);
-```
+````
 
 Now we can evaluate the mass matrix,
 
-```julia
+````julia
 M = CB.mass(femm, geom0, u0, Rfield0, dchi);
-```
+````
 
 and we have the complete discrete model for the solution of the free vibration problem.
 
-```julia
+````julia
 #
-```
+````
 
 ## Solve the free-vibration problem
 
@@ -342,47 +342,47 @@ to solve the generalized eigenvalue problem with the sparse matrices. As is
 common in structural dynamics, we request the smallest eigenvalues in
 absolute value (`:SM`).
 
-```julia
+````julia
 using Arpack
-```
+````
 
 The prestress-modified natural frequencies are computed in the loop for
 a number of prestress force values.
 
-```julia
-Ps = collect(linearspace(-1.0, 1.0, 20)).*PEul
+````julia
+Ps = collect(linearspace(-1.0, 1.0, 50)).*PEul
 freqs = let freqs =[];
     for P in Ps
-```
+````
 
 Note that we take the complete stiffness matrix: elastic plus prestress (initial stress).
 
-```julia
-        evals, evecs, nconv = eigs(K + P.*Kg, M; nev=neigvs, which=:SM);
-```
+````julia
+        evals, evecs, nconv = eigs(K + P.*Kg, M; nev=neigvs, which=:SM, explicittransform = :none);
+````
 
 The fundamental frequency:
 
-```julia
+````julia
         f = sqrt(evals[1]) / (2 * pi);
         push!(freqs, f);
     end
     freqs
 end
-```
+````
 
 Show the normalized force and the fundamental frequencies.
 
-```julia
+````julia
 sigdig(n) = round(n * 1000) / 1000
 @show sigdig.(Ps./PEul), sigdig.(freqs)
 
 #
-```
+````
 
 ## Present a plot
 
-```julia
+````julia
 using Gnuplot
 
 
@@ -394,8 +394,8 @@ using Gnuplot
 @gp  :- "set ylabel 'Frequency(P)/Frequency(0) [Hz]'" :-
 @gp  :- "set title 'Prestressed column'"
 
-true
-```
+nothing
+````
 
 ---
 

@@ -171,7 +171,7 @@ oshift = (2*pi*15)^2
 # common in structural dynamics, we request the smallest eigenvalues in
 # absolute value (`:SM`). 
 using Arpack
-evals, evecs, nconv = eigs(Symmetric(K + oshift * M), Symmetric(M); nev=neigvs, which=:SM);
+evals, evecs, nconv = eigs(Symmetric(K + oshift * M), Symmetric(M); nev=neigvs, which=:SM, explicittransform = :none);
 # First  we should check that the requested eigenvalues actually converged:
 @show nconv == neigvs
 
@@ -260,7 +260,7 @@ results = let
         MASS_TYPE_LUMPED_DIAGONAL_WITH_ROTATION_INERTIA]
         M = CB.mass(femm, geom0, u0, Rfield0, dchi; mass_type = mtype);
         
-        evals, evecs, nconv = eigs(Symmetric(K + oshift * M), Symmetric(M); nev=neigvs, which=:SM);
+        evals, evecs, nconv = eigs(Symmetric(K + oshift * M), Symmetric(M); nev=neigvs, which=:SM, explicittransform = :none);
         evals = real.(evals)
         evecs = real.(evecs)
         results[mtype] = evals, evecs
@@ -318,9 +318,7 @@ display(pl)
 M = 0.5 .* CB.mass(femm, geom0, u0, Rfield0, dchi; mass_type = MASS_TYPE_LUMPED_DIAGONAL_NO_ROTATION_INERTIA) + 
     0.5 .* CB.mass(femm, geom0, u0, Rfield0, dchi; mass_type = MASS_TYPE_CONSISTENT_WITH_ROTATION_INERTIA);
 # With this mixed mass matrix we solve the free vibration problem again.
-evals, evecs, nconv = eigs(Symmetric(K + oshift * M), Symmetric(M); nev=neigvs, which=:SM);
-evals = real.(evals)
-evecs = real.(evecs)
+evals, evecs, nconv = eigs(Symmetric(K + oshift * M), Symmetric(M); nev=neigvs, which=:SM, explicittransform = :none);
 
 # Plotting the newly obtained data on top of the previously presented data, we
 # can observe sometimes substantial improvement of accuracy of the mixed-matrix
@@ -331,5 +329,5 @@ config  = PlotConfig(plotlyServerURL="https://chart-studio.plotly.com", showLink
 pl = plot([rtc, tc0, tc1, tc2, tc3, mtc], layout; config = config)
 display(pl)
 
-
+nothing
 

@@ -1,3 +1,0 @@
-module FinEtoolsFlexBeamsTutorials
-
-end # module

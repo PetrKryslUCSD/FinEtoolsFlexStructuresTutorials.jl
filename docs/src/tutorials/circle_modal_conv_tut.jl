@@ -136,7 +136,7 @@ results = let
         K = CB.stiffness(femm, geom0, u0, Rfield0, dchi);
         M = CB.mass(femm, geom0, u0, Rfield0, dchi; mass_type = mtype);
         # Solve the free vibration problem. 
-        evals, evecs, nconv = eigs(K + oshift * M, M; nev=neigvs, which=:SM, ncv = 3*neigvs, maxiter = 2000);
+        evals, evecs, nconv = eigs(K + oshift * M, M; nev=neigvs, which=:SM, ncv = 3*neigvs, maxiter = 2000, explicittransform = :none);
         # Correct for the mass shift.
         evals = evals .- oshift;
         sigdig(n) = round(n * 10000) / 10000

@@ -16,40 +16,40 @@ in another. The results are compared with analytical expressions.
 - Calculate the discrete model quantities and solve the free vibration problem.
 - Demonstrate visualization of the free vibrations.
 
-```julia
+````julia
 #
-```
+````
 
 ## Definition of the basic inputs
 
 The finite element code relies on the basic functionality implemented in this
 package.
 
-```julia
+````julia
 using FinEtools
-```
+````
 
 The material parameters may be defined with the specification of the units.
 The elastic properties are:
 
-```julia
+````julia
 E = 30002.0 * phun("ksi")
 nu = 0.0;
-```
+````
 
 The mass density is expressed in customary units as
 
-```julia
+````julia
 rho = 0.28 * phun("lbm/in^3")
-```
+````
 
 Here are the cross-sectional dimensions and the length of the beam between supports.
 
-```julia
+````julia
 b = 1.8 * phun("in"); h = 1.8 * phun("in"); L = 100 * phun("in");
 
 #
-```
+````
 
 ## Analytical frequencies
 
@@ -65,26 +65,26 @@ as a clamped beam.
 
 The cross-sectional properties are:
 
-```julia
+````julia
 A = b * h;
 I2 = b * h^3 / 12;
 I3 = b^3 * h / 12;
-```
+````
 
 Then the analytical vibration frequencies for the first two modes are:
 
-```julia
+````julia
 @show analyt_freq = [(1 * pi)^2, (4.73004074)^2] .* (sqrt(E * I2 / rho / A) / (2 * pi * L^2));
-```
+````
 
 The purpose of the numerical model is to calculate approximation to these two
 analytical natural frequencies.
 
-```julia
+````julia
 neigvs = length(analyt_freq);
 
 #
-```
+````
 
 ## Cross-section
 
@@ -97,67 +97,67 @@ Cartesian coordinates. `[1.0, 0.0, 0.0]` is the vector that together with the
 tangent to the midline curve of the beam spans the $x_1x_2$ plane of the
 local coordinates for the beam.
 
-```julia
-using FinEtoolsFlexBeams.CrossSectionModule: CrossSectionRectangle
+````julia
+using FinEtoolsFlexStructures.CrossSectionModule: CrossSectionRectangle
 cs = CrossSectionRectangle(s -> b, s -> h, s -> [1.0, 0.0, 0.0])
-```
+````
 
 We can compare the analytical values of the cross-section properties with
 those stored in the `cs` structure:
 
-```julia
+````julia
 @show A, I2, I3
 @show cs.parameters(0.0)
-```
+````
 
 Now we generate the mesh of the beam. The locations of its two endpoints are:
 
-```julia
+````julia
 xyz = [[0 -L / 2 0]; [0 L / 2 0]]
-```
+````
 
 We will generate
 
-```julia
+````julia
 n = 4
-```
+````
 
 beam elements along the member.
 
-```julia
-using FinEtoolsFlexBeams.MeshFrameMemberModule: frame_member
+````julia
+using FinEtoolsFlexStructures.MeshFrameMemberModule: frame_member
 fens, fes = frame_member(xyz, n, cs);
-```
+````
 
 The mesh definition consists of the nodes
 
-```julia
+````julia
 @show fens
-```
+````
 
 and the finite elements
 
-```julia
+````julia
 @show fes
-```
+````
 
 Note  that the cross-sectional properties are incorporated through `cs`.
 
-```julia
+````julia
 #
-```
+````
 
 ## Material
 
 Material properties can be now used to create a material: isotropic elasticity
 model of the `FinEtoolsDeforLinear` package is instantiated.
 
-```julia
+````julia
 using FinEtoolsDeforLinear
 material = MatDeforElastIso(DeforModelRed3D, rho, E, nu, 0.0)
 
 #
-```
+````
 
 ## Fields
 
@@ -166,42 +166,42 @@ We begin by constructing the requisite fields, geometry and displacement.
 These are the so-called "configuration variables", all initialized to 0.
 This is that geometry field.
 
-```julia
+````julia
 geom0 = NodalField(fens.xyz)
-```
+````
 
 This is the displacement field, three unknown displacements per node.
 
-```julia
+````julia
 u0 = NodalField(zeros(size(fens.xyz, 1), 3))
-```
+````
 
 This is the rotation field, three unknown rotations per node are represented
 with a rotation matrix, in total nine numbers. The utility function
 `initial_Rfield`
 
-```julia
-using FinEtoolsFlexBeams.RotUtilModule: initial_Rfield
+````julia
+using FinEtoolsFlexStructures.RotUtilModule: initial_Rfield
 Rfield0 = initial_Rfield(fens)
-```
+````
 
 Here we verify the number of nodes and the number of degrees of freedom in the
 rotation field per node.
 
-```julia
+````julia
 @show nents(Rfield0)
 @show ndofs(Rfield0)
-```
+````
 
 Finally, this is the displacement and rotation field for incremental changes,
 incremental displacements and incremental rotations. In total, 6 unknowns per
 node.
 
-```julia
+````julia
 dchi = NodalField(zeros(size(fens.xyz, 1), 6))
 
 #
-```
+````
 
 ## Support conditions
 
@@ -214,86 +214,86 @@ location. The tolerance of a fraction of the length of an element (i. e. the
 distance between the nodes) is used to take the location and blow it up into
 a nonzero-volume box.
 
-```julia
+````julia
 l1 = selectnode(fens; box=[0 0 -L / 2 -L / 2 0 0], tolerance=L / n / 1000)
-```
+````
 
 The nodes in this list should consist of a single node (which is why the
 tolerance is so small, in order to limit the selection to a single node near
 the location given).
 
-```julia
+````julia
 @show length(l1)
-```
+````
 
 The boundary condition at this point dictates zero displacements (degrees of
 freedom 1, 2, and 3) and zero rotations about $Y$ (5) and $Z$ (6). This
 leaves rotation about the $X$ free.
 
-```julia
+````julia
 for i in [1,2,3,5,6]
     setebc!(dchi, l1, true, i)
 end
-```
+````
 
 Similarly, the node next to the other end of the beam is selected.
 
-```julia
+````julia
 l1 = selectnode(fens; box=[0 0 L / 2  L / 2 0 0], tolerance=L / n / 1000)
-```
+````
 
 And an identical boundary condition combination is enforced.
 
-```julia
+````julia
 for i in [1,2,3,5,6]
     setebc!(dchi, l1, true, i)
 end
-```
+````
 
 These boundary conditions now need to be "applied". This simply means that the
 prescribed values of the degrees of freedom are copied into the active
 degrees of freedom.
 
-```julia
+````julia
 applyebc!(dchi)
-```
+````
 
 The essential boundary conditions will also reduce the number of free
 (unknown) degrees of freedom.
 
-```julia
+````julia
 numberdofs!(dchi);
-```
+````
 
 Here we inspect the degrees of freedom in the incremental
 displacement/rotation field:
 
-```julia
+````julia
 @show dchi.dofnums
-```
+````
 
 Note that the degrees of freedom are actually carried by the incremental
 field, not by the displacement or the rotation fields. There are therefore 6
 degrees of freedom per node in the incremental displacement field.
 
-```julia
+````julia
 #
-```
+````
 
 ## Assemble the global discrete system
 
-```julia
-using FinEtoolsFlexBeams.FEMMCorotBeamModule: FEMMCorotBeam
+````julia
+using FinEtoolsFlexStructures.FEMMCorotBeamModule: FEMMCorotBeam
 femm = FEMMCorotBeam(IntegDomain(fes, GaussRule(1, 2)), material);
-```
+````
 
 For disambiguation we will refer to the stiffness and mass functions by
 qualifying them with the corotational-beam module, `FEMMCorotBeamModule`.
 
-```julia
-using FinEtoolsFlexBeams.FEMMCorotBeamModule
+````julia
+using FinEtoolsFlexStructures.FEMMCorotBeamModule
 CB = FEMMCorotBeamModule
-```
+````
 
 Thus we can construct the stiffness and mass matrix as follows:
 Note that the finite element machine is the first argument. This provides
@@ -301,19 +301,19 @@ access to the integration domain. The next argument is the geometry field,
 followed by the displacement, rotations, and incremental
 displacement/rotation fields.
 
-```julia
+````julia
 K = CB.stiffness(femm, geom0, u0, Rfield0, dchi);
 M = CB.mass(femm, geom0, u0, Rfield0, dchi);
-```
+````
 
 We can compare the size of the stiffness matrix with the number of degrees of
 freedom that are unknown (20).
 
-```julia
+````julia
 @show size(K)
 
 #
-```
+````
 
 ## Solve the free-vibration problem
 
@@ -322,53 +322,53 @@ to solve the generalized eigenvalue problem with the sparse matrices. As is
 common in structural dynamics, we request the smallest eigenvalues in
 absolute value (`:SM`).
 
-```julia
+````julia
 using Arpack
-evals, evecs, nconv = eigs(K, M; nev=neigvs, which=:SM);
-```
+evals, evecs, nconv = eigs(Symmetric(K), Symmetric(M); nev=neigvs, which=:SM, explicittransform = :none);
+````
 
 First  we should check that the requested eigenvalues actually converged:
 
-```julia
+````julia
 @show nconv == neigvs
-```
+````
 
 The eigenvalues (i. e. the squares of the angular frequencies) are returned in
 the vector `evals`. The mode shapes constitute the columns of the matrix
 `evecs`.
 
-```julia
+````julia
 @show size(evecs)
-```
+````
 
 The natural frequencies are obtained from the squares of the angular
 frequencies. We note the use of `sqrt.` which broadcast the square root over
 the array `evals`.
 
-```julia
+````julia
 fs = sqrt.(evals) / (2 * pi);
 
 #
-```
+````
 
 ## Comparison of computed and analytical results
 
 The approximate and analytical frequencies are now reported.
 
-```julia
+````julia
 println("Approximate frequencies: $fs [Hz]")
 println("Analytical frequencies: $analyt_freq [Hz]")
-```
+````
 
 Close agreement between the approximate and analytical frequencies can be
 observed: The error of the numerical solution is a fraction of a percent.
 
-```julia
+````julia
 errs = abs.(analyt_freq .- fs) ./ analyt_freq
 println("Relative errors of frequencies: $errs [ND]")
 
 #
-```
+````
 
 ## Visualize vibration modes
 
@@ -377,75 +377,74 @@ geometry. The configuration during the animation needs to reflect rotations.
 The function `update_rotation_field!` will update the rotation field given a
 vibration mode.
 
-```julia
-using FinEtoolsFlexBeams.RotUtilModule: update_rotation_field!
-```
+````julia
+using FinEtoolsFlexStructures.RotUtilModule: update_rotation_field!
+````
 
 The visualization utilities take advantage of the PlotlyJS library.
 
-```julia
-using PlotlyJS
-using FinEtoolsFlexBeams.VisUtilModule: plot_space_box, plot_solid, render, react!, default_layout_3d, save_to_json
-```
+````julia
+using VisualStructures: plot_space_box, plot_solid, render, react!, default_layout_3d, save_to_json
+````
 
 The magnitude of the vibration modes (displacements  and rotations) will be
 amplified with this scale factor:
 
-```julia
-scale = 1.5
-```
+````julia
+scale = 1.2
+````
 
 This is the mode that will be animated:
 
-```julia
+````julia
 mode = 1
-```
+````
 
 In order to handle variables inside loops correctly, we create a local scope
 with the `let end` block.
 
-```julia
+````julia
 let
-```
+````
 
 The extents of the box will be preserved during animation in order to
 eliminate changes in the viewing parameters.
 
-```julia
+````julia
     tbox = plot_space_box([[-0.2 * L -L / 2 -0.2 * L]; [+0.2 * L L / 2 +0.2 * L]])
-```
+````
 
 This is the geometry of the structure without deformation (undeformed). It
 is displayed as gray, partially transparent.
 
-```julia
+````julia
     tenv0 = plot_solid(fens, fes; x=geom0.values, u=0.0 .* dchi.values[:, 1:3], R=Rfield0.values, facecolor="rgb(125, 155, 125)", opacity=0.3);
-```
+````
 
 Initially the plot consists of the box and the undeformed geometry.
 
-```julia
+````julia
     plots = cat(tbox, tenv0; dims=1)
-```
+````
 
 Create the layout for the plot. Set the size of the window.
 
-```julia
+````julia
     layout = default_layout_3d(;width=600, height=600, options = Dict(:responsive=>true))
-```
+````
 
 Set the aspect mode to get the correct proportions.
 
-```julia
+````julia
     layout[:scene][:aspectmode] = "data"
-```
+````
 
 Render the undeformed structure
 
-```julia
+````julia
     pl = render(plots; layout=layout, title="Mode $(mode)")
     sleep(2.115)
-```
+````
 
 This is the animation loop.
 1. Distribute a fraction of the selected eigenvector into the incremental
@@ -457,7 +456,7 @@ of plots.
 4. Call the `react!` function to update the display. Sleep for a brief
 period of time to give the display a chance to become current.
 
-```julia
+````julia
     for xscale in scale .* sin.(collect(0:1:89) .* (2 * pi / 21))
         scattersysvec!(dchi, xscale .* evecs[:, mode])
         u1 = deepcopy(u0)
@@ -469,21 +468,21 @@ period of time to give the display a chance to become current.
         react!(pl, plots, pl.plot.layout)
         sleep(0.115)
     end
-```
+````
 
 Save the plot to a Json file. It can be then re-displayed later.
 
-```julia
+````julia
     save_to_json(pl, "deformed_plot.json")
 end
-```
+````
 
 Load the plot from a file.
 
-```julia
-using FinEtoolsFlexBeams.VisUtilModule: plot_from_json
+````julia
+using VisualStructures: plot_from_json
 plot_from_json("deformed_plot.json")
-```
+````
 
 ---
 

@@ -102,7 +102,7 @@ u0 = NodalField(zeros(size(fens.xyz, 1), 3))
 # This is the rotation field, three unknown rotations per node are represented
 # with a rotation matrix, in total nine numbers. The utility function
 # `initial_Rfield`
-using FinEtoolsFlexBeams.RotUtilModule: initial_Rfield
+using FinEtoolsFlexStructures.RotUtilModule: initial_Rfield
 Rfield0 = initial_Rfield(fens)
 
 
@@ -140,7 +140,7 @@ sensor202n = selectnode(fens; box = initbox!(Float64[], vec([-8*L 0 3.8*L])), in
 
 # For disambiguation we will refer to the stiffness and mass functions by
 # qualifying them with the corotational-beam module, `FEMMCorotBeamModule`.
-using FinEtoolsFlexBeams.FEMMCorotBeamModule
+using FinEtoolsFlexStructures.FEMMCorotBeamModule
 CB = FEMMCorotBeamModule
 
 # Note that we have an array of finite element sets. We compute the matrices for
@@ -166,7 +166,7 @@ end
 
 using LinearAlgebra
 
-using FinEtoolsFlexBeams.FEMMPointMassModule
+using FinEtoolsFlexStructures.FEMMPointMassModule
 PM = FEMMPointMassModule
 
 # There is at the sensor on the tail.
@@ -186,7 +186,7 @@ Mp = PM.mass(femmcm1, geom0, u0, Rfield0, dchi) + PM.mass(femmcm2, geom0, u0, Rf
 
 using LinearAlgebra
 
-using FinEtoolsFlexBeams.FEMMPointGroundedSpringModule
+using FinEtoolsFlexStructures.FEMMPointGroundedSpringModule
 BS = FEMMPointGroundedSpringModule
 
 # There are three suspension points at the top of the fuselage. We assume that
@@ -219,7 +219,7 @@ oshift = (2*pi*0.5)^2;
 # common in structural dynamics, we request the smallest eigenvalues in
 # absolute value (`:SM`). 
 using Arpack
-evals, evecs, nconv = eigs(Kt + oshift * Mt, Mt; nev=neigvs, which=:SM);
+evals, evecs, nconv = eigs(Kt + oshift * Mt, Mt; nev=neigvs, which=:SM, explicittransform = :none);
 # First  we should check that the requested eigenvalues actually converged:
 @show nconv == neigvs
 
@@ -260,11 +260,11 @@ println("Participant C experimental: $([6.37, 16.10, 33.13, 33.53, 35.65, 48.38,
 # geometry. The configuration during the animation needs to reflect rotations.
 # The function `update_rotation_field!` will update the rotation field given a
 # vibration mode.
-using FinEtoolsFlexBeams.RotUtilModule: update_rotation_field!
+using FinEtoolsFlexStructures.RotUtilModule: update_rotation_field!
 
 # The visualization utilities take advantage of the PlotlyJS library.
 using PlotlyJS
-using FinEtoolsFlexBeams.VisUtilModule: plot_space_box, plot_solid, render, react!, default_layout_3d, save_to_json
+using VisualStructures: plot_space_box, plot_solid, render, react!, default_layout_3d, save_to_json
 
 # The magnitude of the vibration modes (displacements  and rotations) will be
 # amplified with this scale factor:
@@ -279,7 +279,7 @@ vis(mode) = begin
         tenv0 = cat(tenv0, t; dims=1)
     end
     plots = tenv0
-    layout = default_layout_3d(;width=600, height=600, title = "Mode $(mode), $(sigdig.(fs[mode])) [Hz]")
+    layout = default_layout_3d(;title = "Mode $(mode), $(sigdig.(fs[mode])) [Hz]")
     layout[:scene][:aspectmode] = "data"
     pl = render(plots; layout=layout)
     sleep(0.115)
@@ -304,4 +304,4 @@ end
 
 vis(7)
 
-true
+nothing

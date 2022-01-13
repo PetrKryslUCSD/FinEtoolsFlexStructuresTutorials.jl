@@ -116,7 +116,7 @@ lfp = linearspace(0.0, 68000.0, 400)
 fsp = let
     fsp = Float64[]
     for load_factor in lfp
-        evals, evecs, nconv = eigs(Symmetric(K + load_factor .* Kg), Symmetric(M); nev = neigvs, which = :SM)
+        evals, evecs, nconv = eigs(Symmetric(K + load_factor .* Kg), Symmetric(M); nev = neigvs, which = :SM, explicittransform = :none)
 
         e = real(evals[1])
         f = e > 0.0 ? sqrt(e) / (2 * pi) : 0.0
@@ -132,7 +132,7 @@ lfm = linearspace(-109000.0, 0.0, 400)
 fsm = let
     fsm = Float64[]
     for load_factor in lfm
-        evals, evecs, nconv = eigs(Symmetric(K + load_factor .* Kg), Symmetric(M); nev = neigvs, which = :SM)
+        evals, evecs, nconv = eigs(Symmetric(K + load_factor .* Kg), Symmetric(M); nev = neigvs, which = :SM, explicittransform = :none)
         e = real(evals[1])
         f = e > 0.0 ? sqrt(e) / (2 * pi) : 0.0
         push!(fsm, f)
@@ -201,9 +201,7 @@ end
 # positive orientation of the force.
 
 loading_factor = 60000
-evals, evecs, nconv = eigs(Symmetric(K + loading_factor .* Kg), Symmetric(M); nev=neigvs, which=:SM);
-evals = real.(evals)
-evecs = real.(evecs)
+evals, evecs, nconv = eigs(Symmetric(K + loading_factor .* Kg), Symmetric(M); nev=neigvs, which=:SM, explicittransform = :none);
 vis(loading_factor, evecs[:, 1])
 
 # This is the same vibration mode for the negative orientation of the force, but
@@ -212,9 +210,7 @@ vis(loading_factor, evecs[:, 1])
 # tension, and therefore stiffer.
 
 loading_factor = -50000
-evals, evecs, nconv = eigs(Symmetric(K + loading_factor .* Kg), Symmetric(M); nev=neigvs, which=:SM);
-evals = real.(evals)
-evecs = real.(evecs)
+evals, evecs, nconv = eigs(Symmetric(K + loading_factor .* Kg), Symmetric(M); nev=neigvs, which=:SM, explicittransform = :none);
 vis(loading_factor, evecs[:, 1])
 
 # Increasing the load factor in the negative orientation further, the
@@ -222,9 +218,7 @@ vis(loading_factor, evecs[:, 1])
 # that is close to the buckling mode shape for this orientation of the force.
 
 loading_factor = -100000
-evals, evecs, nconv = eigs(Symmetric(K + loading_factor .* Kg), Symmetric(M); nev=neigvs, which=:SM);
-evals = real.(evals)
-evecs = real.(evecs)
+evals, evecs, nconv = eigs(Symmetric(K + loading_factor .* Kg), Symmetric(M); nev=neigvs, which=:SM, explicittransform = :none);
 vis(loading_factor, evecs[:, 1])
 
-true
+nothing
