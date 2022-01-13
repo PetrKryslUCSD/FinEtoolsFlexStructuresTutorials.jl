@@ -66,7 +66,7 @@ radius = 1.0 * phun("m"); diameter = 0.1 * phun("m");
 # coordinates. `[1.0, 0.0, 0.0]` is the vector that together with the tangent
 # to the midline curve of the beam spans the $x_1x_2$ plane of the local
 # coordinates for the beam.
-using FinEtoolsFlexBeams.CrossSectionModule: CrossSectionCircle
+using FinEtoolsFlexStructures.CrossSectionModule: CrossSectionCircle
 cs = CrossSectionCircle(s -> diameter/2, s -> [1.0, 0.0, 0.0])
 @show cs.parameters(0.0)
 
@@ -93,7 +93,7 @@ neigvs = 18;
 # We will generate
 n = 20
 # beam elements along the member.
-using FinEtoolsFlexBeams.MeshFrameMemberModule: frame_member
+using FinEtoolsFlexStructures.MeshFrameMemberModule: frame_member
 tolerance = radius/n/1000;
 fens, fes = frame_member([0 0 0; 2*pi 0 0], n, cs)
 for i in 1:count(fens)
@@ -122,7 +122,7 @@ u0 = NodalField(zeros(size(fens.xyz, 1), 3))
 # This is the rotation field, three unknown rotations per node are represented
 # with a rotation matrix, in total nine numbers. The utility function
 # `initial_Rfield`
-using FinEtoolsFlexBeams.RotUtilModule: initial_Rfield
+using FinEtoolsFlexStructures.RotUtilModule: initial_Rfield
 Rfield0 = initial_Rfield(fens)
 # Here we verify the number of nodes and the number of degrees of freedom in the
 # rotation field per node.
@@ -144,11 +144,11 @@ numberdofs!(dchi);
 ##
 # ## Assemble the global discrete system
 
-using FinEtoolsFlexBeams.FEMMCorotBeamModule: FEMMCorotBeam
+using FinEtoolsFlexStructures.FEMMCorotBeamModule: FEMMCorotBeam
 femm = FEMMCorotBeam(IntegDomain(fes, GaussRule(1, 2)), material);
 
 # For disambiguation we will refer to the stiffness and mass functions by qualifying them with the corotational-beam module, `FEMMCorotBeamModule`.
-using FinEtoolsFlexBeams.FEMMCorotBeamModule
+using FinEtoolsFlexStructures.FEMMCorotBeamModule
 CB = FEMMCorotBeamModule
 # Thus we can construct the stiffness and mass matrix as follows:
 # Note that the finite element machine is the first argument. This provides
@@ -171,9 +171,13 @@ oshift = (2*pi*15)^2
 # common in structural dynamics, we request the smallest eigenvalues in
 # absolute value (`:SM`). 
 using Arpack
-evals, evecs, nconv = eigs(K + oshift * M, M; nev=neigvs, which=:SM);
+evals, evecs, nconv = eigs(Symmetric(K + oshift * M), Symmetric(M); nev=neigvs, which=:SM);
 # First  we should check that the requested eigenvalues actually converged:
 @show nconv == neigvs
+
+# Make sure the eigenvalues and eigenvectors are stripped of the imaginary part.
+evals = real.(evals)
+evecs = real.(evecs)
 
 # The eigenvalues (i. e. the squares of the angular frequencies) are returned in
 # the vector `evals`. The mode shapes constitute the columns of the matrix `evecs`.
@@ -194,11 +198,11 @@ println("Approximate frequencies: $(sigdig.(fs)) [Hz]")
 # ## Set up the visualization of the vibration modes
 
 # The animation will show one of the vibration modes overlaid on the undeformed geometry. The configuration during the animation needs to reflect rotations. The function `update_rotation_field!` will update the rotation field given a vibration mode.
-using FinEtoolsFlexBeams.RotUtilModule: update_rotation_field!
+using FinEtoolsFlexStructures.RotUtilModule: update_rotation_field!
 
 # The visualization utilities take advantage of the PlotlyJS library.
 using PlotlyJS
-using FinEtoolsFlexBeams.VisUtilModule: plot_space_box, plot_solid, render, react!, default_layout_3d, save_to_json
+using VisualStructures: plot_space_box, plot_solid, render, react!, default_layout_3d, save_to_json
 
 # The magnitude of the vibration modes (displacements  and rotations) will be amplified with this scale factor:
 scale = 1.5
@@ -242,7 +246,7 @@ end
 # Animate the harmonic motion of the mode given as argument:
 # vis(7)
 
-using FinEtoolsFlexBeams.FESetCorotBeamModule: MASS_TYPE_CONSISTENT_NO_ROTATION_INERTIA, 
+using FinEtoolsFlexStructures.FESetCorotBeamModule: MASS_TYPE_CONSISTENT_NO_ROTATION_INERTIA, 
 MASS_TYPE_CONSISTENT_WITH_ROTATION_INERTIA, 
 MASS_TYPE_LUMPED_DIAGONAL_NO_ROTATION_INERTIA, 
 MASS_TYPE_LUMPED_DIAGONAL_WITH_ROTATION_INERTIA
@@ -255,7 +259,10 @@ results = let
         MASS_TYPE_LUMPED_DIAGONAL_NO_ROTATION_INERTIA, 
         MASS_TYPE_LUMPED_DIAGONAL_WITH_ROTATION_INERTIA]
         M = CB.mass(femm, geom0, u0, Rfield0, dchi; mass_type = mtype);
-        evals, evecs, nconv = eigs(K + oshift * M, M; nev=neigvs, which=:SM);
+        
+        evals, evecs, nconv = eigs(Symmetric(K + oshift * M), Symmetric(M); nev=neigvs, which=:SM);
+        evals = real.(evals)
+        evecs = real.(evecs)
         results[mtype] = evals, evecs
     end
     results
@@ -294,10 +301,8 @@ rtc = scatter(;x=collect(1:length(rfs)), y=rfs, mode="lines", name = "ref", line
 # Set up the layout:
 layout = Layout(;width=650, height=400, xaxis=attr(title="Mode", type = "linear"), yaxis=attr(title="Frequency [hertz]", type = "linear"), title = "Comparison of mass types")
 # Plot the graphs:
-pl = plot([rtc, tc0, tc1, tc2, tc3], layout; options = Dict(
-        :showSendToCloud=>true, 
-        :plotlyServerURL=>"https://chart-studio.plotly.com"
-        ))
+config  = PlotConfig(plotlyServerURL="https://chart-studio.plotly.com", showLink=true)
+pl = plot([rtc, tc0, tc1, tc2, tc3], layout; config = config)
 display(pl)
 
 
@@ -313,17 +318,17 @@ display(pl)
 M = 0.5 .* CB.mass(femm, geom0, u0, Rfield0, dchi; mass_type = MASS_TYPE_LUMPED_DIAGONAL_NO_ROTATION_INERTIA) + 
     0.5 .* CB.mass(femm, geom0, u0, Rfield0, dchi; mass_type = MASS_TYPE_CONSISTENT_WITH_ROTATION_INERTIA);
 # With this mixed mass matrix we solve the free vibration problem again.
-evals, evecs, nconv = eigs(K + oshift * M, M; nev=neigvs, which=:SM);
+evals, evecs, nconv = eigs(Symmetric(K + oshift * M), Symmetric(M); nev=neigvs, which=:SM);
+evals = real.(evals)
+evecs = real.(evecs)
 
 # Plotting the newly obtained data on top of the previously presented data, we
 # can observe sometimes substantial improvement of accuracy of the mixed-matrix
 # formulation relative to the individual mass matrix types.
 x = 1:length(evals); y = sqrt.([max(0, e - oshift) for e in evals]) / (2 * pi);
 mtc = scatter(;x=x, y=y, mode="markers", name = "mixed", line_color = "rgb(215, 15, 215)", marker = attr(size = 9, symbol = "circle"))
-pl = plot([rtc, tc0, tc1, tc2, tc3, mtc], layout; options = Dict(
-        :showSendToCloud=>true, 
-        :plotlyServerURL=>"https://chart-studio.plotly.com"
-        ))
+config  = PlotConfig(plotlyServerURL="https://chart-studio.plotly.com", showLink=true)
+pl = plot([rtc, tc0, tc1, tc2, tc3, mtc], layout; config = config)
 display(pl)
 
 

@@ -47,6 +47,7 @@
 # The finite element code realize on the basic functionality implemented in this
 # package.
 using FinEtools
+using FinEtoolsDeforLinear
 using SymRCM
 using Arpack
 
@@ -96,7 +97,7 @@ results = let
         # vtkexportmesh(File, fens, fes)
         # @async run(`"paraview.exe" $File`)
 
-        using FinEtoolsDeforLinear
+        
         # Generate the material and the FEM machine.
         MR = DeforModelRed3D
         material = MatDeforElastIso(MR, rho, E, nu, 0.0)
