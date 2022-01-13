@@ -13,5 +13,6 @@ makedocs(
 	)
 
 deploydocs(
+    devbranch = "main",
     repo = "github.com/PetrKryslUCSD/FinEtoolsFlexStructuresTutorials.jl.git",
 )
