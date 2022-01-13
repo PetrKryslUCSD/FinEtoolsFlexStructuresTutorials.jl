@@ -96,7 +96,7 @@ u0 = NodalField(zeros(size(fens.xyz, 1), 3))
 # This is the rotation field, three unknown rotations per node are represented
 # with a rotation matrix, in total nine numbers. The utility function
 # `initial_Rfield`
-using FinEtoolsFlexBeams.RotUtilModule: initial_Rfield
+using FinEtoolsFlexStructures.RotUtilModule: initial_Rfield
 Rfield0 = initial_Rfield(fens)
 
 # Finally, this is the displacement and rotation field for incremental changes,
@@ -142,7 +142,7 @@ end
 
 # For disambiguation we will refer to the stiffness and mass functions by
 # qualifying them with the corotational-beam module, `FEMMCorotBeamModule`.
-using FinEtoolsFlexBeams.FEMMCorotBeamModule
+using FinEtoolsFlexStructures.FEMMCorotBeamModule
 CB = FEMMCorotBeamModule
 
 # Note that we have an array of finite element sets. We compute the matrices for
@@ -175,7 +175,7 @@ end
 
 using LinearAlgebra
 
-using FinEtoolsFlexBeams.FEMMPointMassModule
+using FinEtoolsFlexStructures.FEMMPointMassModule
 PM = FEMMPointMassModule
 
 # There is a sensor on the tail.
@@ -197,7 +197,7 @@ bungeecoefficient = 4000*phun("N/m");
 
 using LinearAlgebra
 
-using FinEtoolsFlexBeams.FEMMPointGroundedSpringModule
+using FinEtoolsFlexStructures.FEMMPointGroundedSpringModule
 BS = FEMMPointGroundedSpringModule
 
 # There are three suspension points at the top of the fuselage. We assume that these bungee supports exert only reaction in the vertical direction.
@@ -372,4 +372,4 @@ y = atan.(imag(results[outputat][quantity]), real(results[outputat][quantity]))/
 @gp  :- "set title 'Force at $(forceat), $(quantity)'"
 
 
-true
+nothing

@@ -47,6 +47,7 @@
 # The finite element code realize on the basic functionality implemented in this
 # package.
 using FinEtools
+using FinEtoolsDeforLinear
 using SymRCM
 using Arpack
 
@@ -96,7 +97,7 @@ results = let
         # vtkexportmesh(File, fens, fes)
         # @async run(`"paraview.exe" $File`)
 
-        using FinEtoolsDeforLinear
+        
         # Generate the material and the FEM machine.
         MR = DeforModelRed3D
         material = MatDeforElastIso(MR, rho, E, nu, 0.0)
@@ -116,7 +117,7 @@ results = let
         M = mass(femm, geom, u)
 
         # Solve the free vibration problem. 
-        evals, evecs, nconv = eigs(K+oshift*M, M; nev=neigvs, which=:SM)
+        evals, evecs, nconv = eigs(K+oshift*M, M; nev=neigvs, which=:SM, explicittransform = :none)
         # Correct for the mass shift.
         evals = evals .- oshift;
         sigdig(n) = round(n * 10000) / 10000

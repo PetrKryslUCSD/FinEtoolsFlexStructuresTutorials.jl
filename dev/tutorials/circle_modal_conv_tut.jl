@@ -49,12 +49,12 @@
 using Arpack
 using FinEtools
 using FinEtoolsDeforLinear
-using FinEtoolsFlexBeams.MeshFrameMemberModule: frame_member
-using FinEtoolsFlexBeams.CrossSectionModule: CrossSectionCircle
-using FinEtoolsFlexBeams.FEMMCorotBeamModule
+using FinEtoolsFlexStructures.MeshFrameMemberModule: frame_member
+using FinEtoolsFlexStructures.CrossSectionModule: CrossSectionCircle
+using FinEtoolsFlexStructures.FEMMCorotBeamModule
 CB = FEMMCorotBeamModule
-using FinEtoolsFlexBeams.FEMMCorotBeamModule: FEMMCorotBeam
-using FinEtoolsFlexBeams.FESetCorotBeamModule: MASS_TYPE_CONSISTENT_NO_ROTATION_INERTIA, 
+using FinEtoolsFlexStructures.FEMMCorotBeamModule: FEMMCorotBeam
+using FinEtoolsFlexStructures.FESetCorotBeamModule: MASS_TYPE_CONSISTENT_NO_ROTATION_INERTIA, 
     MASS_TYPE_CONSISTENT_WITH_ROTATION_INERTIA, 
     MASS_TYPE_LUMPED_DIAGONAL_NO_ROTATION_INERTIA, 
     MASS_TYPE_LUMPED_DIAGONAL_WITH_ROTATION_INERTIA
@@ -127,7 +127,7 @@ results = let
         # Generate the discrete model.
         geom0 = NodalField(fens.xyz)
         u0 = NodalField(zeros(size(fens.xyz, 1), 3))
-        using FinEtoolsFlexBeams.RotUtilModule: initial_Rfield
+        using FinEtoolsFlexStructures.RotUtilModule: initial_Rfield
         Rfield0 = initial_Rfield(fens)
         dchi = NodalField(zeros(size(fens.xyz, 1), 6))
         applyebc!(dchi)
@@ -136,7 +136,7 @@ results = let
         K = CB.stiffness(femm, geom0, u0, Rfield0, dchi);
         M = CB.mass(femm, geom0, u0, Rfield0, dchi; mass_type = mtype);
         # Solve the free vibration problem. 
-        evals, evecs, nconv = eigs(K + oshift * M, M; nev=neigvs, which=:SM, ncv = 3*neigvs, maxiter = 2000);
+        evals, evecs, nconv = eigs(K + oshift * M, M; nev=neigvs, which=:SM, ncv = 3*neigvs, maxiter = 2000, explicittransform = :none);
         # Correct for the mass shift.
         evals = evals .- oshift;
         sigdig(n) = round(n * 10000) / 10000

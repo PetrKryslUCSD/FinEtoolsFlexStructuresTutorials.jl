@@ -25,26 +25,6 @@ using PlotlyJS
 
 using FinEtools
 
-# using FinEtoolsDeforLinear
-# using FinEtoolsFlexBeams.CrossSectionModule: CrossSectionRectangle
-# 
-# using FinEtoolsFlexBeams.FEMMCorotBeamModule
-# using FinEtoolsFlexBeams.FEMMCorotBeamModule: FEMMCorotBeam
-# stiffness = FEMMCorotBeamModule.stiffness
-# mass = FEMMCorotBeamModule.mass
-# distribloads_global = FEMMCorotBeamModule.distribloads_global
-# restoringforce = FEMMCorotBeamModule.restoringforce
-# gyroscopic = FEMMCorotBeamModule.gyroscopic
-# using FinEtoolsFlexBeams.RotUtilModule: initial_Rfield, linear_update_rotation_field!, update_rotation_field!
-# using LinearAlgebra: dot
-# using Arpack
-# using LinearAlgebra
-# using SparseArrays
-# using FinEtoolsBeamsVis: plot_points, plot_nodes, plot_midline, render, plot_space_box, plot_solid, space_aspectratio
-# using PlotlyJS
-# using JSON
-
-
 # The material parameters may be defined with the specification of the units.
 # The elastic properties and the mass density are:
 E = 71240.0 * phun("MPa")
@@ -83,7 +63,7 @@ mass_type=1;
 # coordinates. `[1.0, 0.0, 0.0]` is the vector that together with the tangent
 # to the midline curve of the beam spans the $x_1x_2$ plane of the local
 # coordinates for the beam.
-using FinEtoolsFlexBeams.CrossSectionModule: CrossSectionRectangle
+using FinEtoolsFlexStructures.CrossSectionModule: CrossSectionRectangle
 cs = CrossSectionRectangle(s -> Width, s -> Width, s -> [1.0, 0.0, 0.0])
 
 # Select the number of elements per leg.
@@ -92,11 +72,11 @@ X=[0 0 0;    reshape(R0*[0,0,Length], 1, 3)];
 n=2;
 tolerance=Length/n/100;
 
-using FinEtoolsFlexBeams.MeshFrameMemberModule: frame_member
+using FinEtoolsFlexStructures.MeshFrameMemberModule: frame_member
 members = []
 push!(members, frame_member(X, n, cs))
 
-using FinEtoolsFlexBeams.MeshFrameMemberModule: merge_members
+using FinEtoolsFlexStructures.MeshFrameMemberModule: merge_members
 fens, fes = merge_members(members; tolerance = tolerance);
 
 # Material properties
@@ -118,7 +98,7 @@ u0 = NodalField(zeros(size(fens.xyz, 1), 3))
 # This is the rotation field, three unknown rotations per node are represented
 # with a rotation matrix, in total nine numbers. The utility function
 # `initial_Rfield`
-using FinEtoolsFlexBeams.RotUtilModule: initial_Rfield
+using FinEtoolsFlexStructures.RotUtilModule: initial_Rfield
 Rfield0 = initial_Rfield(fens)
 
 # Finally, this is the displacement and rotation field for incremental changes,
@@ -149,13 +129,13 @@ end
 
 
 # For disambiguation we will refer to the stiffness and mass functions by qualifying them with the corotational-beam module, `FEMMCorotBeamModule`.
-using FinEtoolsFlexBeams.FEMMCorotBeamModule
+using FinEtoolsFlexStructures.FEMMCorotBeamModule
 CB = FEMMCorotBeamModule
 femm = CB.FEMMCorotBeam(IntegDomain(fes, GaussRule(1, 2)), material)
 fi = ForceIntensity(q);
 
 
-using FinEtoolsFlexBeams.RotUtilModule: initial_Rfield, linear_update_rotation_field!, update_rotation_field!
+using FinEtoolsFlexStructures.RotUtilModule: initial_Rfield, update_rotation_field!
 using DelimitedFiles
 
 function integrate(tend, CB, geom0, u0, Rfield0, dchi, v0, report)
@@ -234,22 +214,9 @@ end
 
 # The visualization utilities take advantage of the PlotlyJS library.
 using PlotlyJS
-using FinEtoolsFlexBeams.VisUtilModule: plot_space_box, plot_midline, plot_solid, render, react!, default_layout_3d, save_to_json
+using VisualStructures: plot_space_box, plot_midline, plot_solid, render, react!, default_layout_3d, save_to_json
 
 # Display the graph of the motion of the tip of the top.
-
-# tipx = Float64[]
-# tipy = Float64[]
-# push!(tipx, X[2,1])
-# push!(tipy, X[2,2])
-# tbox = scatter(;x=[0.0, 0.06], y=[-0.06, 0.02], mode="markers", name = "", line_color = "rgb(255, 255, 255)")
-# refv = readdlm(joinpath(@__DIR__, "fast_top_ref.txt"), ',')
-# tref = scatter(;x=refv[:, 1], y=refv[:, 2], mode="lines", name = "Reference", line_color = "rgb(15, 15, 15)")
-# plots = cat(tbox, tref, scatter(;x=tipx./Length, y=tipy./Length, mode="markers+lines"); dims = 1)
-# layout = Layout(;width=500, height=500, xaxis=attr(title="x-coordinate", zeroline=false), yaxis=attr(title="y-coordinate", zeroline=false))
-# pl = plot(plots, layout)
-# display(pl)
-# sleep(1.0)
 
 function updategraph(step, u1, Rfield1)
     if (mod(step,20)==0)
@@ -266,16 +233,16 @@ end
 tipx = Float64[]
 tipy = Float64[] 
 tipz = Float64[] 
-layout = Layout(;width=900, height=900, scene=attr(
-xaxis = attr(title="X"),
-yaxis = attr(title="Y"),
-zaxis = attr(title="Z"),
-camera = attr(
-up=attr(x=-0.8, y=-0.6, z=0.07),
-center=attr(x=0.0, y=0.0, z=0.0),
-eye=attr(x=0.1, y=0.12, z=2.17),
-projection = attr(type = "orthographic")
-)), showlegend = false)
+layout = Layout(; scene=attr(
+    xaxis = attr(title="X"),
+    yaxis = attr(title="Y"),
+    zaxis = attr(title="Z"),
+    camera = attr(
+        up=attr(x=-0.8, y=-0.6, z=0.07),
+        center=attr(x=0.0, y=0.0, z=0.0),
+        eye=attr(x=0.1, y=0.12, z=2.17),
+        projection = attr(type = "orthographic")
+        )), showlegend = false)
 tbox = plot_space_box([[-1.1*Width -1.1*Width 0]; [1.1*Width 1.1*Width 1.1*Length]])
 tshape0s = plot_solid(fens, fes; x = geom0.values, u = 0.0.*dchi.values[:, 1:3], R = Rfield0.values, facecolor = "rgb(125, 155, 125)", opacity = 0.3);
 tshape0m = plot_midline(fens, fes; x = geom0.values, u = 0.0.*dchi.values[:, 1:3], color = "rgb(125, 105, 175)", lwidth = 4)

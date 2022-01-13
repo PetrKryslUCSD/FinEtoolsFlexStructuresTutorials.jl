@@ -44,8 +44,9 @@
 
 # ![](garteur-geom.png)
 
-# The beam finite element code relies on the basic functionality implemented in this
-# package.
+# The structural-element finite element code relies on the basic functionality
+# implemented in this general FEM package. 
+
 using FinEtools
 
 # This is the characteristic length. The dimensions of the aircraft frame are
@@ -61,7 +62,7 @@ L = 0.1*phun("m");
 # the fuselage and the wing, between the wing structure and the viscoelastic
 # damping layer, and between the fuselage and the tail.
 
-using FinEtoolsFlexBeams.CrossSectionModule: CrossSectionRectangle
+using FinEtoolsFlexStructures.CrossSectionModule: CrossSectionRectangle
 # Body of the frame (fuselage).
 cs_body = CrossSectionRectangle(s -> 1.5*L, s -> L/2, s -> [1.0, 0.0, 1.0]; label = 1)
 # Wing beam.
@@ -93,7 +94,7 @@ cs_connta2p = CrossSectionRectangle(s -> L/5, s -> L/5, s -> [1.0, 0.0, 1.0]; la
 # parts. This will result in a number of separate meshes for the members. These
 # separate meshes will then be glued together (merged) based on the tolerance on
 # the location of the nodes.
-using FinEtoolsFlexBeams.MeshFrameMemberModule: frame_member
+using FinEtoolsFlexStructures.MeshFrameMemberModule: frame_member
 tolerance = L/10000;
 # Number of intervals from 0.25*L to 8.5*L (the extent of the constraining plate).
 nc = 8
@@ -195,4 +196,4 @@ fens, fesa = mergenmeshes(meshes, tolerance)
 @show [s.label[1] for s in fesa]'
 
 # End of the tutorial
-true
+nothing
