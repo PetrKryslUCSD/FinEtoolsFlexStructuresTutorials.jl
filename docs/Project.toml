@@ -1,0 +1,4 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+FinEtoolsFlexStructuresTutorials = "fb494621-2122-4676-b372-82b7c08c1435"
+VisualStructures = "4ff8b045-ea8a-4ad0-a12a-3d0ba4e7e6b4"
