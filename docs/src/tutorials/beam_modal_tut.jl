@@ -68,7 +68,7 @@ neigvs = length(analyt_freq);
 # Cartesian coordinates. `[1.0, 0.0, 0.0]` is the vector that together with the
 # tangent to the midline curve of the beam spans the $x_1x_2$ plane of the
 # local coordinates for the beam.
-using FinEtoolsFlexBeams.CrossSectionModule: CrossSectionRectangle
+using FinEtoolsFlexStructures.CrossSectionModule: CrossSectionRectangle
 cs = CrossSectionRectangle(s -> b, s -> h, s -> [1.0, 0.0, 0.0])
 
 # We can compare the analytical values of the cross-section properties with
@@ -81,7 +81,7 @@ xyz = [[0 -L / 2 0]; [0 L / 2 0]]
 # We will generate
 n = 4
 # beam elements along the member.
-using FinEtoolsFlexBeams.MeshFrameMemberModule: frame_member
+using FinEtoolsFlexStructures.MeshFrameMemberModule: frame_member
 fens, fes = frame_member(xyz, n, cs);
 # The mesh definition consists of the nodes
 @show fens
@@ -110,7 +110,7 @@ u0 = NodalField(zeros(size(fens.xyz, 1), 3))
 # This is the rotation field, three unknown rotations per node are represented
 # with a rotation matrix, in total nine numbers. The utility function
 # `initial_Rfield`
-using FinEtoolsFlexBeams.RotUtilModule: initial_Rfield
+using FinEtoolsFlexStructures.RotUtilModule: initial_Rfield
 Rfield0 = initial_Rfield(fens)
 # Here we verify the number of nodes and the number of degrees of freedom in the
 # rotation field per node.
@@ -168,12 +168,12 @@ numberdofs!(dchi);
 ##
 # ## Assemble the global discrete system
 
-using FinEtoolsFlexBeams.FEMMCorotBeamModule: FEMMCorotBeam
+using FinEtoolsFlexStructures.FEMMCorotBeamModule: FEMMCorotBeam
 femm = FEMMCorotBeam(IntegDomain(fes, GaussRule(1, 2)), material);
 
 # For disambiguation we will refer to the stiffness and mass functions by
 # qualifying them with the corotational-beam module, `FEMMCorotBeamModule`.
-using FinEtoolsFlexBeams.FEMMCorotBeamModule
+using FinEtoolsFlexStructures.FEMMCorotBeamModule
 CB = FEMMCorotBeamModule
 # Thus we can construct the stiffness and mass matrix as follows:
 # Note that the finite element machine is the first argument. This provides
@@ -194,7 +194,9 @@ M = CB.mass(femm, geom0, u0, Rfield0, dchi);
 # common in structural dynamics, we request the smallest eigenvalues in
 # absolute value (`:SM`). 
 using Arpack
-evals, evecs, nconv = eigs(K, M; nev=neigvs, which=:SM);
+evals, evecs, nconv = eigs(Symmetric(K), Symmetric(M); nev=neigvs, which=:SM);
+evals = real.(evals)
+evecs = real.(evecs)
 # First  we should check that the requested eigenvalues actually converged:
 @show nconv == neigvs
 
@@ -227,15 +229,15 @@ println("Relative errors of frequencies: $errs [ND]")
 # geometry. The configuration during the animation needs to reflect rotations.
 # The function `update_rotation_field!` will update the rotation field given a
 # vibration mode.
-using FinEtoolsFlexBeams.RotUtilModule: update_rotation_field!
+using FinEtoolsFlexStructures.RotUtilModule: update_rotation_field!
 
 # The visualization utilities take advantage of the PlotlyJS library.
-using PlotlyJS
-using FinEtoolsFlexBeams.VisUtilModule: plot_space_box, plot_solid, render, react!, default_layout_3d, save_to_json
+
+using VisualStructures: plot_space_box, plot_solid, render, react!, default_layout_3d, save_to_json
 
 # The magnitude of the vibration modes (displacements  and rotations) will be
 # amplified with this scale factor:
-scale = 1.5
+scale = 1.2
 
 # This is the mode that will be animated:
 mode = 1
@@ -283,5 +285,5 @@ let
 end
 
 # Load the plot from a file.
-using FinEtoolsFlexBeams.VisUtilModule: plot_from_json
+using VisualStructures: plot_from_json
 plot_from_json("deformed_plot.json")
