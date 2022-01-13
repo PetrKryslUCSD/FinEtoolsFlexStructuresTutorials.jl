@@ -2,6 +2,13 @@
 
 Source code: [`beam_modal_tut.jl`](beam_modal_tut.jl)
 
+Generate the markdown from the source:
+
+````julia
+using Literate
+Literate.markdown(@__FILE__, "$(@__DIR__)"; documenter=false);
+````
+
 ## Description
 
 Vibration analysis of a beam simply supported in one plane, and clamped
@@ -16,11 +23,13 @@ in another. The results are compared with analytical expressions.
 - Calculate the discrete model quantities and solve the free vibration problem.
 - Demonstrate visualization of the free vibrations.
 
-````julia
-#
-````
-
 ## Definition of the basic inputs
+
+We will probably need some linear algebra functions.
+
+````julia
+using LinearAlgebra
+````
 
 The finite element code relies on the basic functionality implemented in this
 package.
@@ -47,8 +56,6 @@ Here are the cross-sectional dimensions and the length of the beam between suppo
 
 ````julia
 b = 1.8 * phun("in"); h = 1.8 * phun("in"); L = 100 * phun("in");
-
-#
 ````
 
 ## Analytical frequencies
@@ -82,8 +89,6 @@ analytical natural frequencies.
 
 ````julia
 neigvs = length(analyt_freq);
-
-#
 ````
 
 ## Cross-section
@@ -109,6 +114,8 @@ those stored in the `cs` structure:
 @show A, I2, I3
 @show cs.parameters(0.0)
 ````
+
+## Mesh generation
 
 Now we generate the mesh of the beam. The locations of its two endpoints are:
 
@@ -143,10 +150,6 @@ and the finite elements
 
 Note  that the cross-sectional properties are incorporated through `cs`.
 
-````julia
-#
-````
-
 ## Material
 
 Material properties can be now used to create a material: isotropic elasticity
@@ -155,16 +158,15 @@ model of the `FinEtoolsDeforLinear` package is instantiated.
 ````julia
 using FinEtoolsDeforLinear
 material = MatDeforElastIso(DeforModelRed3D, rho, E, nu, 0.0)
-
-#
 ````
 
 ## Fields
 
 Now we start constructing the discrete finite element model.
 We begin by constructing the requisite fields, geometry and displacement.
-These are the so-called "configuration variables", all initialized to 0.
-This is that geometry field.
+These are the so-called "configuration variables", all initialized to zero.
+
+This is the geometry field. It describes the locations of the nodes.
 
 ````julia
 geom0 = NodalField(fens.xyz)
@@ -176,9 +178,10 @@ This is the displacement field, three unknown displacements per node.
 u0 = NodalField(zeros(size(fens.xyz, 1), 3))
 ````
 
-This is the rotation field, three unknown rotations per node are represented
-with a rotation matrix, in total nine numbers. The utility function
-`initial_Rfield`
+This is the rotation (orientation) field, where the three unknown rotations
+per node are represented with a rotation matrix, in total nine numbers. The
+utility function `initial_Rfield` is used to construct this initial
+orientation field where each orientation matrix is the identity.
 
 ````julia
 using FinEtoolsFlexStructures.RotUtilModule: initial_Rfield
@@ -199,8 +202,6 @@ node.
 
 ````julia
 dchi = NodalField(zeros(size(fens.xyz, 1), 6))
-
-#
 ````
 
 ## Support conditions
@@ -223,7 +224,7 @@ tolerance is so small, in order to limit the selection to a single node near
 the location given).
 
 ````julia
-@show length(l1)
+@show length(l1) == 1
 ````
 
 The boundary condition at this point dictates zero displacements (degrees of
@@ -276,10 +277,6 @@ Note that the degrees of freedom are actually carried by the incremental
 field, not by the displacement or the rotation fields. There are therefore 6
 degrees of freedom per node in the incremental displacement field.
 
-````julia
-#
-````
-
 ## Assemble the global discrete system
 
 ````julia
@@ -289,6 +286,7 @@ femm = FEMMCorotBeam(IntegDomain(fes, GaussRule(1, 2)), material);
 
 For disambiguation we will refer to the stiffness and mass functions by
 qualifying them with the corotational-beam module, `FEMMCorotBeamModule`.
+We will use the abbreviation `CB`.
 
 ````julia
 using FinEtoolsFlexStructures.FEMMCorotBeamModule
@@ -311,8 +309,6 @@ freedom that are unknown (20).
 
 ````julia
 @show size(K)
-
-#
 ````
 
 ## Solve the free-vibration problem
@@ -320,14 +316,15 @@ freedom that are unknown (20).
 The Arnoldi algorithm implemented in the well-known `Arpack` package is used
 to solve the generalized eigenvalue problem with the sparse matrices. As is
 common in structural dynamics, we request the smallest eigenvalues in
-absolute value (`:SM`).
+absolute value (`:SM`). In order to help the function decide which algorithm
+is suitable, we explicitly designate the matrices as symmetric.
 
 ````julia
 using Arpack
 evals, evecs, nconv = eigs(Symmetric(K), Symmetric(M); nev=neigvs, which=:SM, explicittransform = :none);
 ````
 
-First  we should check that the requested eigenvalues actually converged:
+We should check that the requested eigenvalues actually converged:
 
 ````julia
 @show nconv == neigvs
@@ -342,13 +339,11 @@ the vector `evals`. The mode shapes constitute the columns of the matrix
 ````
 
 The natural frequencies are obtained from the squares of the angular
-frequencies. We note the use of `sqrt.` which broadcast the square root over
+frequencies. We note the use of `sqrt.` which broadcasts the square root over
 the array `evals`.
 
 ````julia
 fs = sqrt.(evals) / (2 * pi);
-
-#
 ````
 
 ## Comparison of computed and analytical results
@@ -366,25 +361,25 @@ observed: The error of the numerical solution is a fraction of a percent.
 ````julia
 errs = abs.(analyt_freq .- fs) ./ analyt_freq
 println("Relative errors of frequencies: $errs [ND]")
-
-#
 ````
 
 ## Visualize vibration modes
 
 The animation will show one of the vibration modes overlaid on the undeformed
-geometry. The configuration during the animation needs to reflect rotations.
-The function `update_rotation_field!` will update the rotation field given a
-vibration mode.
-
-````julia
-using FinEtoolsFlexStructures.RotUtilModule: update_rotation_field!
-````
+geometry.
 
 The visualization utilities take advantage of the PlotlyJS library.
 
 ````julia
 using VisualStructures: plot_space_box, plot_solid, render, react!, default_layout_3d, save_to_json
+````
+
+The configuration during the animation needs to reflect rotations.
+The function `update_rotation_field!` will update the rotation field given a
+vibration mode.
+
+````julia
+using FinEtoolsFlexStructures.RotUtilModule: update_rotation_field!
 ````
 
 The magnitude of the vibration modes (displacements  and rotations) will be
@@ -430,7 +425,7 @@ Initially the plot consists of the box and the undeformed geometry.
 Create the layout for the plot. Set the size of the window.
 
 ````julia
-    layout = default_layout_3d(;width=600, height=600, options = Dict(:responsive=>true))
+    layout = default_layout_3d(; options = Dict(:responsive=>true))
 ````
 
 Set the aspect mode to get the correct proportions.
@@ -482,6 +477,12 @@ Load the plot from a file.
 ````julia
 using VisualStructures: plot_from_json
 plot_from_json("deformed_plot.json")
+````
+
+Nothing to return.
+
+````julia
+nothing
 ````
 
 ---
