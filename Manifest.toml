@@ -231,12 +231,6 @@ git-tree-sha1 = "ede27371f8b9f299a6053f5c8386870a29d8f9c0"
 uuid = "e9187c00-8bdd-11e9-1e70-7ba8303116a2"
 version = "1.2.1"
 
-[[deps.FinEtoolsFlexBeams]]
-deps = ["Arpack", "Dierckx", "FinEtools", "FinEtoolsDeforLinear", "JSON", "LinearAlgebra", "PlotlyBase", "PlotlyJS", "Revise", "SparseArrays", "SymRCM", "Test"]
-git-tree-sha1 = "fb1f340c48d66d8f10e1a4c05df241ef3741323c"
-uuid = "1d6e2fc3-29aa-4bd6-bf55-212bcb8e2840"
-version = "1.0.0"
-
 [[deps.FinEtoolsFlexStructures]]
 deps = ["Arpack", "DataDrop", "Dierckx", "FinEtools", "FinEtoolsDeforLinear", "LinearAlgebra", "Revise", "SparseArrays", "Statistics", "SymRCM", "Test"]
 git-tree-sha1 = "b8c44d9c22e6d9c4343c1e15e13ff1dd74a025ca"
@@ -554,6 +548,12 @@ git-tree-sha1 = "85f8e6578bf1f9ee0d11e7bb1b1456435479d47c"
 uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 version = "1.4.1"
 
+[[deps.Parameters]]
+deps = ["OrderedCollections", "UnPack"]
+git-tree-sha1 = "34c0e9ad262e5f7fc75b10a9952ca7692cfc5fbe"
+uuid = "d96e819e-fc66-5662-9728-84c9c7592b0a"
+version = "0.12.3"
+
 [[deps.Parsers]]
 deps = ["Dates"]
 git-tree-sha1 = "d7fa6237da8004be601e19bd6666083056649918"
@@ -571,16 +571,16 @@ deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markd
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[deps.PlotlyBase]]
-deps = ["Base64", "Dates", "DelimitedFiles", "DocStringExtensions", "JSON", "Kaleido_jll", "LaTeXStrings", "Logging", "Pkg", "REPL", "Requires", "Statistics", "UUIDs"]
-git-tree-sha1 = "bca220daa9705b891a42c6ce0c20534a3196e73e"
+deps = ["ColorSchemes", "Dates", "DelimitedFiles", "DocStringExtensions", "JSON", "LaTeXStrings", "Logging", "Parameters", "Pkg", "REPL", "Requires", "Statistics", "UUIDs"]
+git-tree-sha1 = "180d744848ba316a3d0fdf4dbd34b77c7242963a"
 uuid = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
-version = "0.5.4"
+version = "0.8.18"
 
 [[deps.PlotlyJS]]
-deps = ["Blink", "DelimitedFiles", "JSExpr", "JSON", "Markdown", "Pkg", "PlotlyBase", "REPL", "Reexport", "Requires", "WebIO"]
-git-tree-sha1 = "882ec81d5cf7d32168946397652ead9df99e0346"
+deps = ["Base64", "Blink", "DelimitedFiles", "JSExpr", "JSON", "Kaleido_jll", "Markdown", "Pkg", "PlotlyBase", "REPL", "Reexport", "Requires", "WebIO"]
+git-tree-sha1 = "53d6325e14d3bdb85fd387a085075f36082f35a3"
 uuid = "f0f68f2c-4968-5e81-91da-67840de0976a"
-version = "0.15.0"
+version = "0.18.8"
 
 [[deps.PolyesterWeave]]
 deps = ["BitTwiddlingConvenienceFunctions", "CPUSummary", "IfElse", "Static", "ThreadingUtilities"]
@@ -778,6 +778,14 @@ deps = ["ArrayInterface", "CPUSummary", "HostCPUFeatures", "Hwloc", "IfElse", "L
 git-tree-sha1 = "6e261bff5c9f2537776165dea3067df9de4440cf"
 uuid = "3d5dd08c-fd9d-11e8-17fa-ed2836048c2f"
 version = "0.21.23"
+
+[[deps.VisualStructures]]
+deps = ["FinEtools", "FinEtoolsFlexStructures", "JSON", "LinearAlgebra", "PlotlyJS", "Revise"]
+git-tree-sha1 = "9a1cd1d281b9c30b3d6347b27107942d32aa2a54"
+repo-rev = "main"
+repo-url = "https://github.com/PetrKryslUCSD/VisualStructures.jl.git"
+uuid = "4ff8b045-ea8a-4ad0-a12a-3d0ba4e7e6b4"
+version = "0.1.0"
 
 [[deps.WebIO]]
 deps = ["AssetRegistry", "Base64", "Distributed", "FunctionalCollections", "JSON", "Logging", "Observables", "Pkg", "Random", "Requires", "Sockets", "UUIDs", "WebSockets", "Widgets"]
