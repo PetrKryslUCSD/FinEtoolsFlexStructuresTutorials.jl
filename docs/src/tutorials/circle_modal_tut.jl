@@ -299,7 +299,7 @@ rfs = vec(Float64[0 0 0 0 0 0 51.85 51.85 53.38 53.38 148.8 148.8 151.0 151.0 28
 rtc = scatter(;x=collect(1:length(rfs)), y=rfs, mode="lines", name = "ref", line_color = "rgb(15, 15, 15)")
 
 # Set up the layout:
-layout = Layout(;width=650, height=400, xaxis=attr(title="Mode", type = "linear"), yaxis=attr(title="Frequency [hertz]", type = "linear"), title = "Comparison of mass types")
+layout = Layout(;xaxis=attr(title="Mode", type = "linear"), yaxis=attr(title="Frequency [hertz]", type = "linear"), title = "Comparison of mass types")
 # Plot the graphs:
 config  = PlotConfig(plotlyServerURL="https://chart-studio.plotly.com", showLink=true)
 pl = plot([rtc, tc0, tc1, tc2, tc3], layout; config = config)

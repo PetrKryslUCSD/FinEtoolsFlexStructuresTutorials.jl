@@ -233,16 +233,16 @@ end
 tipx = Float64[]
 tipy = Float64[] 
 tipz = Float64[] 
-layout = Layout(;width=900, height=900, scene=attr(
-xaxis = attr(title="X"),
-yaxis = attr(title="Y"),
-zaxis = attr(title="Z"),
-camera = attr(
-up=attr(x=-0.8, y=-0.6, z=0.07),
-center=attr(x=0.0, y=0.0, z=0.0),
-eye=attr(x=0.1, y=0.12, z=2.17),
-projection = attr(type = "orthographic")
-)), showlegend = false)
+layout = Layout(; scene=attr(
+    xaxis = attr(title="X"),
+    yaxis = attr(title="Y"),
+    zaxis = attr(title="Z"),
+    camera = attr(
+        up=attr(x=-0.8, y=-0.6, z=0.07),
+        center=attr(x=0.0, y=0.0, z=0.0),
+        eye=attr(x=0.1, y=0.12, z=2.17),
+        projection = attr(type = "orthographic")
+        )), showlegend = false)
 tbox = plot_space_box([[-1.1*Width -1.1*Width 0]; [1.1*Width 1.1*Width 1.1*Length]])
 tshape0s = plot_solid(fens, fes; x = geom0.values, u = 0.0.*dchi.values[:, 1:3], R = Rfield0.values, facecolor = "rgb(125, 155, 125)", opacity = 0.3);
 tshape0m = plot_midline(fens, fes; x = geom0.values, u = 0.0.*dchi.values[:, 1:3], color = "rgb(125, 105, 175)", lwidth = 4)
