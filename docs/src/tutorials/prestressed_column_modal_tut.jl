@@ -15,7 +15,6 @@
 # - Solve the eigenvalue free vibration problem with the inclusion of the
 #   geometric stiffness matrix.
 
-##
 # ## Definition of the basic inputs
 
 # The finite element code realize on the basic functionality implemented in this
@@ -33,7 +32,6 @@ rho = 4.65 * phun("oz/in ^3") / g
 # Here are the cross-sectional dimensions and the length of the beam between supports.
 b = 1.8 * phun("in"); h = 1.8 * phun("in"); L = 300 * phun("in");
 
-##
 # ## Cross-section
 
 # Cross-sectional properties are incorporated in the cross-section property. The
@@ -50,7 +48,6 @@ cs = CrossSectionRectangle(s -> b, s -> h, s -> [1.0, 0.0, 0.0])
 # Here we retrieve the cross-sectional properties at the arc length 0.0.
 @show A, J, I1, I2, I3 = cs.parameters(0.0)
 
-##
 # ## Analytical frequencies 
 
 # The analytical frequencies were taken from table 8-1 of Formulas for
@@ -81,14 +78,12 @@ using FinEtoolsFlexStructures.MeshFrameMemberModule: frame_member
 fens, fes = frame_member(xyz, n, cs);
 
 
-##
 # ## Material
 
 # Material properties can be now used to create a material: isotropic elasticity model of the `FinEtoolsDeforLinear` package is instantiated.
 using FinEtoolsDeforLinear
 material = MatDeforElastIso(DeforModelRed3D, rho, E, nu, 0.0)
 
-##
 # ## Fields
 
 # Now we start constructing the discrete finite element model.
@@ -109,7 +104,6 @@ Rfield0 = initial_Rfield(fens)
 # node.
 dchi = NodalField(zeros(size(fens.xyz, 1), 6))
 
-##
 # ## Support conditions
 
 # Now we apply the essential boundary conditions (EBCs) to enforce the action of
@@ -147,7 +141,6 @@ numberdofs!(dchi);
 # field, not by the displacement or the rotation fields. 
 
 
-##
 # ## Assemble the global discrete system
 
 using FinEtoolsFlexStructures.FEMMCorotBeamModule: FEMMCorotBeam
@@ -207,7 +200,6 @@ M = CB.mass(femm, geom0, u0, Rfield0, dchi);
 
 
 
-##
 # ## Solve the free-vibration problem
 
 # The Arnoldi algorithm implemented in the well-known `Arpack` package is used
@@ -235,7 +227,6 @@ end
 sigdig(n) = round(n * 1000) / 1000
 @show sigdig.(Ps./PEul), sigdig.(freqs)
 
-##
 # ## Present a plot
 
 using Gnuplot

@@ -15,10 +15,6 @@ The fundamental vibration frequency depends on the prestress force.
 - Solve the eigenvalue free vibration problem with the inclusion of the
   geometric stiffness matrix.
 
-````julia
-#
-````
-
 ## Definition of the basic inputs
 
 The finite element code realize on the basic functionality implemented in this
@@ -47,8 +43,6 @@ Here are the cross-sectional dimensions and the length of the beam between suppo
 
 ````julia
 b = 1.8 * phun("in"); h = 1.8 * phun("in"); L = 300 * phun("in");
-
-#
 ````
 
 ## Cross-section
@@ -71,8 +65,6 @@ Here we retrieve the cross-sectional properties at the arc length 0.0.
 
 ````julia
 @show A, J, I1, I2, I3 = cs.parameters(0.0)
-
-#
 ````
 
 ## Analytical frequencies
@@ -121,9 +113,6 @@ beam elements along the member.
 ````julia
 using FinEtoolsFlexStructures.MeshFrameMemberModule: frame_member
 fens, fes = frame_member(xyz, n, cs);
-
-
-#
 ````
 
 ## Material
@@ -133,8 +122,6 @@ Material properties can be now used to create a material: isotropic elasticity m
 ````julia
 using FinEtoolsDeforLinear
 material = MatDeforElastIso(DeforModelRed3D, rho, E, nu, 0.0)
-
-#
 ````
 
 ## Fields
@@ -169,8 +156,6 @@ node.
 
 ````julia
 dchi = NodalField(zeros(size(fens.xyz, 1), 6))
-
-#
 ````
 
 ## Support conditions
@@ -232,10 +217,6 @@ displacement/rotation field:
 
 Note that the degrees of freedom are actually carried by the incremental
 field, not by the displacement or the rotation fields.
-
-````julia
-#
-````
 
 ## Assemble the global discrete system
 
@@ -331,10 +312,6 @@ M = CB.mass(femm, geom0, u0, Rfield0, dchi);
 
 and we have the complete discrete model for the solution of the free vibration problem.
 
-````julia
-#
-````
-
 ## Solve the free-vibration problem
 
 The Arnoldi algorithm implemented in the well-known `Arpack` package is used
@@ -376,8 +353,6 @@ Show the normalized force and the fundamental frequencies.
 ````julia
 sigdig(n) = round(n * 1000) / 1000
 @show sigdig.(Ps./PEul), sigdig.(freqs)
-
-#
 ````
 
 ## Present a plot
