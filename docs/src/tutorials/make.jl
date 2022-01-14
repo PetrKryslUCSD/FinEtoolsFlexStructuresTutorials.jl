@@ -1,10 +1,10 @@
 using Literate
 
 # Copy tutorial sources
-for t in readdir(".")
+for t in readdir("$(@__DIR__)")
     if occursin(r".*_tut.jl", t)
-        println("\nTutorial $t in $(pwd())\n")
-        Literate.markdown(t, "."; documenter=false);
+        println("\nTutorial $t in $(@__DIR__)\n")
+        Literate.markdown(joinpath(@__DIR__, t), "$(@__DIR__)"; documenter=false);
         # cp(t, "../../../src/" * t, force = true)
     end
 end
