@@ -35,10 +35,6 @@ September 14-17, 1997, Sacramento, California.
 - Demonstrate the use of grounded springs.
 - Illustrate verification of the solution of the free vibration problem.
 
-````julia
-#
-````
-
 ## Geometry of the testbed airplane.
 
 It was a rather simple structure which was reasonably dynamically
@@ -58,10 +54,6 @@ include("garteur_geometry_tut.jl")
 
 The geometry is visualized in the tutorial
 [garteur_geometry_vis_tut](garteur_geometry_vis_tut.jl).
-
-````julia
-#
-````
 
 ## Material
 
@@ -104,10 +96,6 @@ getmaterial(labl) = begin
     end
     return alu
 end
-
-
-
-#
 ````
 
 ## Fields
@@ -155,8 +143,6 @@ number of degrees of freedom in the system.
 
 ````julia
 numberdofs!(dchi);
-
-#
 ````
 
 ## Identify support points and locations of sensors
@@ -196,8 +182,6 @@ The joint between the horizontal and vertical tail parts
     sensors[202] = sensor202n
     sensors
 end
-
-#
 ````
 
 ## Assemble the global discrete system
@@ -238,8 +222,6 @@ Kf, Kd, M = let
     end
     Kf, Kd, M
 end
-
-#
 ````
 
 ## Additional concentrated masses.
@@ -266,8 +248,6 @@ mass2n = selectnode(fens; box = initbox!(Float64[], vec([1.8*L -9.2*L .96*L])), 
 femmcm2 =  PM.FEMMPointMass(IntegDomain(FESetP1(reshape([mass1n; mass2n;], 2, 1)), PointRule()), FFltMat(0.2*phun("kg")*LinearAlgebra.I(3)));
 
 Mp = PM.mass(femmcm1, geom0, u0, Rfield0, dchi) + PM.mass(femmcm2, geom0, u0, Rfield0, dchi);
-
-#
 ````
 
 ## Bungee supports
@@ -290,10 +270,6 @@ femmbs =  BS.FEMMPointGroundedSpring(IntegDomain(FESetP1(reshape([suspln; susprn
 FFltMat([bungeecoefficient*[0;0;1]*[0;0;1]' 0*LinearAlgebra.I(3); 0*LinearAlgebra.I(3) 0*LinearAlgebra.I(3)]));
 
 Kb = BS.stiffness(femmbs, geom0, u0, Rfield0, dchi)
-
-
-
-#
 ````
 
 ## Damping
@@ -376,8 +352,6 @@ the damping layer (the connectors between the wing components).
 
 ````julia
 Ct = Cf + Cd
-
-#
 ````
 
 ## Loading
@@ -405,8 +379,6 @@ domain.
 
 ````julia
 F = CB.distribloads(lfemm, geom0, dchi, fi, 3);
-
-#
 ````
 
 ## Solve the Harmonic vibration problem
@@ -476,8 +448,6 @@ accelerance112 = receptance112 .* (-oms.^2);
 results = Dict()
 results[12] = Dict("receptance"=>receptance12, "mobility"=>mobility12, "accelerance"=>accelerance12)
 results[112] = Dict("receptance"=>receptance112, "mobility"=>mobility112, "accelerance"=>accelerance112)
-
-#
 ````
 
 ## Present the results graphically
