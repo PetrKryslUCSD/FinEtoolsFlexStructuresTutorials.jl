@@ -33,7 +33,6 @@
 # - Visualize the structure interactively.
 # 
 
-##
 # ## Geometry of the testbed airplane.
 
 # The aluminum testbed was a rather simple structure which was reasonably
@@ -49,7 +48,6 @@
 
 include("garteur_geometry_tut.jl")
 
-##
 # ## Basic visualization
 
 # Here we use the `PlotlyJS` plotting library, with some simple utilities for
@@ -94,12 +92,11 @@ layout = default_layout_3d(;width=900, height=900)
 # panning, etc.
 pl = render(traces; layout = layout)
 
-##
 # ## Visualizing the nodes
 
 # In order to be able to discern the nodes we will reduce the opacity of the
 # surfaces representing the beams, otherwise the nodes would be hidden by these
-# surfaces. Otherwise the geometries defined in the same way as above.
+# surfaces. The geometry is defined in the same way as above.
 
 tbox = plot_space_box([[-1.2 * L -1.2 * L -1.2 * L]; [+1.2 * L +1.2 * L +1.2 * L]])
 traces = let traces = tbox

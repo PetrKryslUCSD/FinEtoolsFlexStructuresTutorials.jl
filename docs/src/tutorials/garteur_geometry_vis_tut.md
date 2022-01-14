@@ -32,10 +32,6 @@ The test-bed was designed and manufactured by ONERA, France.
 - Demonstrate the use of massless connectors.
 - Visualize the structure interactively.
 
-````julia
-#
-````
-
 ## Geometry of the testbed airplane.
 
 The aluminum testbed was a rather simple structure which was reasonably
@@ -51,8 +47,6 @@ cross-sectional properties, the connectivity, and the location of the nodes.
 
 ````julia
 include("garteur_geometry_tut.jl")
-
-#
 ````
 
 ## Basic visualization
@@ -118,15 +112,13 @@ panning, etc.
 
 ````julia
 pl = render(traces; layout = layout)
-
-#
 ````
 
 ## Visualizing the nodes
 
 In order to be able to discern the nodes we will reduce the opacity of the
 surfaces representing the beams, otherwise the nodes would be hidden by these
-surfaces. Otherwise the geometries defined in the same way as above.
+surfaces. The geometry is defined in the same way as above.
 
 ````julia
 tbox = plot_space_box([[-1.2 * L -1.2 * L -1.2 * L]; [+1.2 * L +1.2 * L +1.2 * L]])
