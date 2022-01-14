@@ -32,10 +32,6 @@ The test-bed was designed and manufactured by ONERA, France.
 - Demonstrate the use of massless connectors.
 - Visualize the structure interactively.
 
-````julia
-#
-````
-
 ## Geometry of the testbed airplane.
 
 The aluminum testbed was a rather simple structure which was reasonably
@@ -58,8 +54,6 @@ expressed in terms of multiples of this characteristic unit.
 
 ````julia
 L = 0.1*phun("m");
-
-#
 ````
 
 ## Cross-section
@@ -139,13 +133,11 @@ Massless connector between the structure and the sensors and point masses.
 
 ````julia
 cs_connta2p = CrossSectionRectangle(s -> L/5, s -> L/5, s -> [1.0, 0.0, 1.0]; label = 11)
-
-#
 ````
 
 ## Mesh
 
-We shall use this utility function to generate the mesh of the individual
+We shall use the `frame_member` utility function to generate the mesh of the individual
 parts. This will result in a number of separate meshes for the members. These
 separate meshes will then be glued together (merged) based on the tolerance on
 the location of the nodes.
@@ -159,6 +151,13 @@ Number of intervals from 0.25*L to 8.5*L (the extent of the constraining plate).
 
 ````julia
 nc = 8
+````
+
+We start with an empty array, and for each part that we mesh, we append the
+mesh to the array. All the meshes in the array will then be considered for
+merging based on geometrical tolerances.
+
+````julia
 meshes = Tuple{FENodeSet, AbstractFESet}[]
 ````
 
@@ -280,8 +279,6 @@ Wingdrum complementary masses
 ````julia
 push!(meshes, frame_member([2*L 9.5*L .91*L ; 1.8*L 9.2*L .96*L], 1, cs_connta2p; label = cs_connta2p.label))# added mass
 push!(meshes, frame_member([2*L -9.5*L .91*L ; 1.8*L -9.2*L .96*L], 1, cs_connta2p; label = cs_connta2p.label))# added mass
-
-#
 ````
 
 ## Merge all the individual members into one coherent structure

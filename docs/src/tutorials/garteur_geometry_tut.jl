@@ -33,7 +33,6 @@
 # - Visualize the structure interactively.
 # 
 
-##
 # ## Geometry of the testbed airplane.
 
 # The aluminum testbed was a rather simple structure which was reasonably
@@ -53,7 +52,6 @@ using FinEtools
 # expressed in terms of multiples of this characteristic unit.
 L = 0.1*phun("m");
 
-##
 # ## Cross-section
 
 # Cross-sectional properties are incorporated in the cross-section property.
@@ -87,10 +85,9 @@ cs_conntb2t = CrossSectionRectangle(s -> L, s -> L/3, s -> [1.0, 0.0, 1.0]; labe
 # Massless connector between the structure and the sensors and point masses.
 cs_connta2p = CrossSectionRectangle(s -> L/5, s -> L/5, s -> [1.0, 0.0, 1.0]; label = 11)
 
-##
 # ## Mesh 
 
-# We shall use this utility function to generate the mesh of the individual
+# We shall use the `frame_member` utility function to generate the mesh of the individual
 # parts. This will result in a number of separate meshes for the members. These
 # separate meshes will then be glued together (merged) based on the tolerance on
 # the location of the nodes.
@@ -98,6 +95,10 @@ using FinEtoolsFlexStructures.MeshFrameMemberModule: frame_member
 tolerance = L/10000;
 # Number of intervals from 0.25*L to 8.5*L (the extent of the constraining plate).
 nc = 8
+
+# We start with an empty array, and for each part that we mesh, we append the
+# mesh to the array. All the meshes in the array will then be considered for
+# merging based on geometrical tolerances.
 meshes = Tuple{FENodeSet, AbstractFESet}[]
 
 # Define the constituent parts of the body of the aircraft.
@@ -175,7 +176,6 @@ push!(meshes, frame_member([2*L -9.5*L .91*L ; 1.8*L -9.8*L .96*L], 1, cs_connta
 push!(meshes, frame_member([2*L 9.5*L .91*L ; 1.8*L 9.2*L .96*L], 1, cs_connta2p; label = cs_connta2p.label))# added mass
 push!(meshes, frame_member([2*L -9.5*L .91*L ; 1.8*L -9.2*L .96*L], 1, cs_connta2p; label = cs_connta2p.label))# added mass
 
-##
 # ## Merge all the individual members into one coherent structure 
 
 # Merge all the meshes of individual parts. This will glue together nodes which
