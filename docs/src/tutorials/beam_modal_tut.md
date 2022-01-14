@@ -2,13 +2,6 @@
 
 Source code: [`beam_modal_tut.jl`](beam_modal_tut.jl)
 
-Generate the markdown from the source:
-
-````julia
-using Literate
-Literate.markdown(@__FILE__, "$(@__DIR__)"; documenter=false);
-````
-
 ## Description
 
 Vibration analysis of a beam simply supported in one plane, and clamped
