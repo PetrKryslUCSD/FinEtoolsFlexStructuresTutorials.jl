@@ -40,7 +40,6 @@ magn = 1e-5 * phun("N");
 # Cross-sectional properties
 cs = CrossSectionRectangle(s -> b, s -> h, s -> [0.0, 1.0, 0.0])
 
-##
 # ## Generate the discrete model
 
 # Select the number of elements per leg.
@@ -98,7 +97,6 @@ update_rotation_field!(Rfield1, dchi)
 # which in turn lead to the geometric stiffness.
 Kg = CB.geostiffness(femm, geom0, u1, Rfield1, dchi);
 
-##
 # ## Solution of the eigenvalue free-vibration problem
 
 using Arpack
@@ -140,7 +138,6 @@ fsm = let
     fsm
 end
 
-##
 # ## Plot of the fundamental frequency is it depends on the loading factor
 
 using Gnuplot
@@ -163,7 +160,6 @@ Gnuplot.gpexec("reset session")
 # different buckling modes: one for the positive orientation of the force and
 # one for the negative orientation.
 
-##
 # ## Visualize some fundamental mode shapes
 
 # Here we visualize the fundamental vibration modes for different values of the

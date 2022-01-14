@@ -66,8 +66,6 @@ Cross-sectional properties
 
 ````julia
 cs = CrossSectionRectangle(s -> b, s -> h, s -> [0.0, 1.0, 0.0])
-
-#
 ````
 
 ## Generate the discrete model
@@ -154,8 +152,6 @@ which in turn lead to the geometric stiffness.
 
 ````julia
 Kg = CB.geostiffness(femm, geom0, u1, Rfield1, dchi);
-
-#
 ````
 
 ## Solution of the eigenvalue free-vibration problem
@@ -207,8 +203,6 @@ fsm = let
     end
     fsm
 end
-
-#
 ````
 
 ## Plot of the fundamental frequency is it depends on the loading factor
@@ -235,10 +229,6 @@ Clearly, the curve giving the dependence of the fundamental frequency on the
 loading factor consists of two branches. These two branches correspond to two
 different buckling modes: one for the positive orientation of the force and
 one for the negative orientation.
-
-````julia
-#
-````
 
 ## Visualize some fundamental mode shapes
 
