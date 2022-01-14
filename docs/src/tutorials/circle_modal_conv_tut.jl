@@ -42,7 +42,6 @@
 #   frequencies. 
 # 
 
-##
 # ## Definition of the basic inputs
 
 # Include the needed packages and modules.
@@ -149,7 +148,6 @@ end
 
 @show results
 
-##
 # ## Richardson extrapolation
 
 # Here we will use Richardson extrapolation from the three sets of data. This

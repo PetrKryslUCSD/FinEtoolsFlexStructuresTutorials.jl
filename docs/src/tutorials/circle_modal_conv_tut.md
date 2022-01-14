@@ -41,10 +41,6 @@ was neglected when computing the reference values.
 - Compute data for extrapolation to the limit to predict the true natural
   frequencies.
 
-````julia
-#
-````
-
 ## Definition of the basic inputs
 
 Include the needed packages and modules.
@@ -217,8 +213,6 @@ Correct for the mass shift.
 end
 
 @show results
-
-#
 ````
 
 ## Richardson extrapolation
