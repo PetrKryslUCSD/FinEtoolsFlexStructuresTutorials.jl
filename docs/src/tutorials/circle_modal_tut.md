@@ -37,10 +37,6 @@ was neglected when computing the reference values.
 - Show convergence relative to reference values.
 - Demonstrate the optimization of eigenvalue accuracy by choosing mass type.
 
-````julia
-#
-````
-
 ## Definition of the basic inputs
 
 The finite element code realize on the basic functionality implemented in this
@@ -69,8 +65,6 @@ supports.
 
 ````julia
 radius = 1.0 * phun("m"); diameter = 0.1 * phun("m");
-
-#
 ````
 
 ## Cross-section
@@ -133,8 +127,6 @@ for i in 1:count(fens)
     fens.xyz[i, :] .= (radius+radius*cos(a), radius*sin(a), 0)
 end
 fens, fes = mergenodes(fens, fes, tolerance, [1, n+1])
-
-#
 ````
 
 ## Material
@@ -144,8 +136,6 @@ Material properties can be now used to create a material: isotropic elasticity m
 ````julia
 using FinEtoolsDeforLinear
 material = MatDeforElastIso(DeforModelRed3D, rho, E, nu, 0.0)
-
-#
 ````
 
 ## Fields
@@ -201,9 +191,6 @@ The  the number of free
 
 ````julia
 numberdofs!(dchi);
-
-
-#
 ````
 
 ## Assemble the global discrete system
@@ -236,8 +223,6 @@ freedom that are unknown (20).
 
 ````julia
 @show size(K)
-
-#
 ````
 
 ## Solve the free-vibration problem
@@ -282,8 +267,6 @@ the array `evals`.
 
 ````julia
 fs = sqrt.([max(0, e - oshift) for e in evals]) / (2 * pi);
-
-#
 ````
 
 ## Comparison of computed and analytical results
@@ -293,8 +276,6 @@ The approximate and analytical frequencies are now reported.
 ````julia
 sigdig(n) = round(n * 10000) / 10000
 println("Approximate frequencies: $(sigdig.(fs)) [Hz]")
-
-#
 ````
 
 ## Set up the visualization of the vibration modes
@@ -380,8 +361,6 @@ This is the animation loop.
         sleep(0.115)
     end
 end
-
-#
 ````
 
 ## Visualize vibration mode
@@ -458,9 +437,6 @@ Plot the graphs:
 config  = PlotConfig(plotlyServerURL="https://chart-studio.plotly.com", showLink=true)
 pl = plot([rtc, tc0, tc1, tc2, tc3], layout; config = config)
 display(pl)
-
-
-#
 ````
 
 ## "Mixed" mass matrix
