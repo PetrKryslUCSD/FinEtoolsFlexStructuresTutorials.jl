@@ -17,7 +17,6 @@
 using LinearAlgebra
 using PlotlyJS
 
-##
 # ## Definition of the basic inputs
 
 # The finite element code realize on the basic functionality implemented in this
@@ -52,7 +51,6 @@ ng = 1/2; nb = 1/4*(1/2+ng)^2;
 mass_type=1;
 
 
-##
 # ## Cross-section
 
 # Cross-sectional properties are incorporated in the cross-section property. The
@@ -85,7 +83,6 @@ material = MatDeforElastIso(DeforModelRed3D, rho, E, nu, 0.0)
 
 
 
-##
 # ## Fields
 
 # Now we start constructing the discrete finite element model.
@@ -106,7 +103,6 @@ Rfield0 = initial_Rfield(fens)
 # node.
 dchi = NodalField(zeros(size(fens.xyz,1), 6))
 
-##
 # ## Support conditions
 
 # The "bottom" of the top is pinned.
