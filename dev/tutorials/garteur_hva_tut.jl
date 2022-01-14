@@ -35,7 +35,6 @@
 # - Demonstrate the use of grounded springs.  
 # - Illustrate verification of the solution of the free vibration problem. 
 
-##
 # ## Geometry of the testbed airplane.
 
 # It was a rather simple structure which was reasonably dynamically
@@ -54,7 +53,6 @@ include("garteur_geometry_tut.jl")
 # [garteur_geometry_vis_tut](garteur_geometry_vis_tut.jl).
 
 
-##
 # ## Material
 
 # Material properties can be now used to create a material: isotropic elasticity
@@ -83,7 +81,6 @@ end
 
 
 
-##
 # ## Fields
 
 # Now we start constructing the discrete finite element model.
@@ -110,7 +107,6 @@ applyebc!(dchi)
 # number of degrees of freedom in the system.
 numberdofs!(dchi);
 
-##
 # ## Identify support points and locations of sensors
 
 # Suspension points are at these nodes:
@@ -136,7 +132,6 @@ sensors = let
     sensors
 end
 
-##
 # ## Assemble the global discrete system
 
 
@@ -169,7 +164,6 @@ Kf, Kd, M = let
     Kf, Kd, M
 end
 
-##
 # ## Additional concentrated masses.
 
 
@@ -189,7 +183,6 @@ femmcm2 =  PM.FEMMPointMass(IntegDomain(FESetP1(reshape([mass1n; mass2n;], 2, 1)
 
 Mp = PM.mass(femmcm1, geom0, u0, Rfield0, dchi) + PM.mass(femmcm2, geom0, u0, Rfield0, dchi);
 
-##
 # ## Bungee supports 
 
 # This is the assumed stifffness of the bungee cords (each one separately).
@@ -208,7 +201,6 @@ Kb = BS.stiffness(femmbs, geom0, u0, Rfield0, dchi)
 
 
 
-##
 # ## Damping
 
 # The overall damping ratios measured in the physical experiments were
@@ -268,7 +260,6 @@ Mt = M + Mp
 # the damping layer (the connectors between the wing components).
 Ct = Cf + Cd
 
-##
 # ## Loading
 
 # Here we assume that the stinger  was attached at the location of the sensor
@@ -286,7 +277,6 @@ fi = ForceIntensity(FFlt[0, 0.0, -fmagn, 0, 0, 0]);
 # domain.
 F = CB.distribloads(lfemm, geom0, dchi, fi, 3);
 
-##
 # ## Solve the Harmonic vibration problem
 
 # The frequency sweep will start at `fromf` and continue through the frequency
@@ -332,7 +322,6 @@ results = Dict()
 results[12] = Dict("receptance"=>receptance12, "mobility"=>mobility12, "accelerance"=>accelerance12)
 results[112] = Dict("receptance"=>receptance112, "mobility"=>mobility112, "accelerance"=>accelerance112)
 
-##
 # ## Present the results graphically
 
 using Gnuplot
