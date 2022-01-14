@@ -37,7 +37,6 @@
 # - Show convergence relative to reference values. 
 # - Demonstrate the optimization of eigenvalue accuracy by choosing mass type.
 
-##
 # ## Definition of the basic inputs
 
 # The finite element code realize on the basic functionality implemented in this
@@ -55,7 +54,6 @@ rho = 8000 * phun("kg/m^3")
 # supports.
 radius = 1.0 * phun("m"); diameter = 0.1 * phun("m"); 
 
-##
 # ## Cross-section
 
 # Cross-sectional properties are incorporated in the cross-section property. The
@@ -102,14 +100,12 @@ for i in 1:count(fens)
 end
 fens, fes = mergenodes(fens, fes, tolerance, [1, n+1])
 
-##
 # ## Material
 
 # Material properties can be now used to create a material: isotropic elasticity model of the `FinEtoolsDeforLinear` package is instantiated.
 using FinEtoolsDeforLinear
 material = MatDeforElastIso(DeforModelRed3D, rho, E, nu, 0.0)
 
-##
 # ## Fields
 
 # Now we start constructing the discrete finite element model.
@@ -141,7 +137,6 @@ applyebc!(dchi)
 numberdofs!(dchi);
 
 
-##
 # ## Assemble the global discrete system
 
 using FinEtoolsFlexStructures.FEMMCorotBeamModule: FEMMCorotBeam
@@ -161,7 +156,6 @@ M = CB.mass(femm, geom0, u0, Rfield0, dchi);
 # freedom that are unknown (20).
 @show size(K)
 
-##
 # ## Solve the free-vibration problem
 
 oshift = (2*pi*15)^2
@@ -187,14 +181,12 @@ evecs = real.(evecs)
 # the array `evals`.
 fs = sqrt.([max(0, e - oshift) for e in evals]) / (2 * pi);
 
-##
 # ## Comparison of computed and analytical results
 
 # The approximate and analytical frequencies are now reported.
 sigdig(n) = round(n * 10000) / 10000
 println("Approximate frequencies: $(sigdig.(fs)) [Hz]")
 
-##
 # ## Set up the visualization of the vibration modes
 
 # The animation will show one of the vibration modes overlaid on the undeformed geometry. The configuration during the animation needs to reflect rotations. The function `update_rotation_field!` will update the rotation field given a vibration mode.
@@ -240,7 +232,6 @@ vis(mode) = let
     end
 end
 
-##
 # ## Visualize vibration mode
 
 # Animate the harmonic motion of the mode given as argument:
@@ -306,7 +297,6 @@ pl = plot([rtc, tc0, tc1, tc2, tc3], layout; config = config)
 display(pl)
 
 
-##
 # ## "Mixed" mass matrix
 
 # As the graph suggests we can try mixing together mass matrices computed from
