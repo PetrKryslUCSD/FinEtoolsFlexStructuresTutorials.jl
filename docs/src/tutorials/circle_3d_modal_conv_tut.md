@@ -41,10 +41,6 @@ was neglected when computing the reference values.
 - Compute data for extrapolation to the limit to predict the true natural
   frequencies.
 
-````julia
-#
-````
-
 ## Definition of the basic inputs
 
 The finite element code realize on the basic functionality implemented in this
@@ -55,6 +51,7 @@ using FinEtools
 using FinEtoolsDeforLinear
 using SymRCM
 using Arpack
+using LinearAlgebra
 ````
 
 The material parameters may be defined with the specification of the units.
@@ -173,7 +170,7 @@ Now set up the discrete model.
 Solve the free vibration problem.
 
 ````julia
-        evals, evecs, nconv = eigs(K+oshift*M, M; nev=neigvs, which=:SM, explicittransform = :none)
+        evals, evecs, nconv = eigs(Symmetric(K+oshift*M), Symmetric(M); nev=neigvs, which=:SM, explicittransform = :none)
 ````
 
 Correct for the mass shift.
@@ -189,8 +186,6 @@ Correct for the mass shift.
 end
 
 @show results
-
-#
 ````
 
 ## Richardson extrapolation

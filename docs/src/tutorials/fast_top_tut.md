@@ -17,8 +17,6 @@ Int. J. Numer. Meth. Eng. 62, 2154–2177 (2005).
 ````julia
 using LinearAlgebra
 using PlotlyJS
-
-#
 ````
 
 ## Definition of the basic inputs
@@ -64,9 +62,6 @@ Choose the mass formulation:
 
 ````julia
 mass_type=1;
-
-
-#
 ````
 
 ## Cross-section
@@ -106,10 +101,6 @@ Material properties
 ````julia
 using FinEtoolsDeforLinear
 material = MatDeforElastIso(DeforModelRed3D, rho, E, nu, 0.0)
-
-
-
-#
 ````
 
 ## Fields
@@ -144,8 +135,6 @@ node.
 
 ````julia
 dchi = NodalField(zeros(size(fens.xyz,1), 6))
-
-#
 ````
 
 ## Support conditions

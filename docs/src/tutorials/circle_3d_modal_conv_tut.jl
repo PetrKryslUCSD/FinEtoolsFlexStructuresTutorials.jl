@@ -41,7 +41,6 @@
 # - Compute data for extrapolation to the limit to predict the true natural
 #   frequencies. 
 
-##
 # ## Definition of the basic inputs
 
 # The finite element code realize on the basic functionality implemented in this
@@ -50,6 +49,7 @@ using FinEtools
 using FinEtoolsDeforLinear
 using SymRCM
 using Arpack
+using LinearAlgebra
 
 # The material parameters may be defined with the specification of the units.
 # The elastic properties are:
@@ -117,7 +117,7 @@ results = let
         M = mass(femm, geom, u)
 
         # Solve the free vibration problem. 
-        evals, evecs, nconv = eigs(K+oshift*M, M; nev=neigvs, which=:SM, explicittransform = :none)
+        evals, evecs, nconv = eigs(Symmetric(K+oshift*M), Symmetric(M); nev=neigvs, which=:SM, explicittransform = :none)
         # Correct for the mass shift.
         evals = evals .- oshift;
         sigdig(n) = round(n * 10000) / 10000
@@ -130,7 +130,6 @@ end
 
 @show results
 
-##
 # ## Richardson extrapolation
 
 # Here we will use Richardson extrapolation from the three sets of data. This
