@@ -33,7 +33,6 @@
 # - Demonstrate the use of grounded springs.  
 # - Illustrate verification of the solution of the free vibration problem. 
 
-##
 # ## Geometry of the testbed airplane.
 
 # The aluminum testbed was a rather simple structure which was reasonably
@@ -51,7 +50,6 @@ include("garteur_geometry_tut.jl")
 # The geometry is visualized in the tutorial 
 # [`garteur_geometry_vis_tut.md`](garteur_geometry_vis_tut.jl).
 
-##
 # ## Material
 
 # Material properties can be now used to create a material: isotropic elasticity
@@ -89,7 +87,6 @@ end
 bungeecoefficient = 4000*phun("N/m");
 
 
-##
 # ## Fields
 
 # Now we start constructing the discrete finite element model.
@@ -117,7 +114,6 @@ applyebc!(dchi)
 # number of degrees of freedom in the system.
 numberdofs!(dchi);
 
-##
 # ## Identify support points and locations of sensors
 
 # Suspension points
@@ -134,7 +130,6 @@ sensor11n = selectnode(fens; box = initbox!(Float64[], vec([-1.8*L -9.8*L .96*L]
 # The joint between the horizontal and vertical tail parts
 sensor202n = selectnode(fens; box = initbox!(Float64[], vec([-8*L 0 3.8*L])), inflate = tolerance)
 
-##
 # ## Assemble the global discrete system
 
 
@@ -160,7 +155,6 @@ K, M = let
     K, M
 end
 
-##
 # ## Additional concentrated masses.
 
 
@@ -180,7 +174,6 @@ femmcm2 =  PM.FEMMPointMass(IntegDomain(FESetP1(reshape([mass1n; mass2n;], 2, 1)
 
 Mp = PM.mass(femmcm1, geom0, u0, Rfield0, dchi) + PM.mass(femmcm2, geom0, u0, Rfield0, dchi);
 
-##
 # ## Bungee supports 
 
 
@@ -203,7 +196,6 @@ Mt = M + Mp
 # freedom that are unknown (20).
 @show size(Kt)
 
-##
 # ## Solve the free-vibration problem
 
 # Find this many natural frequencies:
@@ -232,7 +224,6 @@ evals, evecs, nconv = eigs(Kt + oshift * Mt, Mt; nev=neigvs, which=:SM, explicit
 # the array `evals`.
 fs = sqrt.([max(0, e - oshift) for e in evals]) / (2 * pi);
 
-##
 # ## Comparison of computed and analytical results
 
 # Set of modes measured by participant C.
@@ -253,7 +244,6 @@ println("Frequencies 7 and higher")
 println("Approximate: $(sigdig.(fs[7:end])) [Hz]")
 println("Participant C experimental: $([6.37, 16.10, 33.13, 33.53, 35.65, 48.38, 49.43, 55.08]) [Hz]")
 
-##
 # ## Visualize vibration modes
 
 # The animation will show one of the vibration modes overlaid on the undeformed
@@ -294,12 +284,12 @@ vis(mode) = begin
             tenv1 = plot_solid(fens, fes; x=geom0.values, u=dchi.values[:, 1:3], R=Rfield1.values, facecolor="rgb(50, 55, 125)");
             plots = cat(plots, tenv1; dims=1)
         end
+        pl.plot.layout[:title] = "Mode $(mode), $(sigdig.(fs[mode])) [Hz]"
         react!(pl, plots, pl.plot.layout)
         sleep(0.08)
     end
 end
 
-##
 # This is the mode that will be animated:
 
 vis(7)
