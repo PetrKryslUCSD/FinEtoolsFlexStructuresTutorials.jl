@@ -436,13 +436,13 @@ Render the undeformed structure
 
 This is the animation loop.
 1. Distribute a fraction of the selected eigenvector into the incremental
-displacement/rotation field.
+  displacement/rotation field.
 2. Create the deformed configuration by defining displacement field `u1`
-and rotation field `Rfield1`.
+  and rotation field `Rfield1`.
 3. Create the plot for the deformed configuration, and add it to the list
-of plots.
+  of plots.
 4. Call the `react!` function to update the display. Sleep for a brief
-period of time to give the display a chance to become current.
+  period of time to give the display a chance to become current.
 
 ````julia
     for xscale in scale .* sin.(collect(0:1:89) .* (2 * pi / 21))
