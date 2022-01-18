@@ -5,7 +5,9 @@ version = "0.0.1"
 
 [deps]
 Arpack = "7d9fca2a-8960-54d3-9f78-7d1dccf2cb97"
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 Blink = "ad839575-38b3-5650-b840-f874b8c74a25"
+DataDrop = "aa547a04-dd37-49ab-8e73-656744f8a8fc"
 Dierckx = "39dd38d3-220a-591b-8e3c-4c3a8c710a94"
 FinEtools = "91bb5406-6c9a-523d-811d-0644c4229550"
 FinEtoolsDeforLinear = "e9187c00-8bdd-11e9-1e70-7ba8303116a2"
